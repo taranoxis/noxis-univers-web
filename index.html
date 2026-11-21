@@ -1525,12 +1525,13 @@ button.hotspot,
 }
 
 .noxis-id-archive{display:none}
-.noxis-id-card:has(#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive-qr.webp"],[src$="nyxer-id-navy-gold.webp"],[src$="ar-in-id-cacao.webp"])){flex-direction:column;gap:.55rem}
-#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive-qr.webp"],[src$="nyxer-id-navy-gold.webp"],[src$="ar-in-id-cacao.webp"]){max-height:calc(100dvh - 96px);max-width:min(92vw,calc((100dvh - 96px) * 4 / 3))}
+.noxis-id-card:has(#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive-qr.webp"],[src$="nyxer-id-navy-gold.webp"],[src$="ar-in-id-cacao.webp"],[src$="aren-id-copper.webp"])){flex-direction:column;gap:.55rem}
+#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive-qr.webp"],[src$="nyxer-id-navy-gold.webp"],[src$="ar-in-id-cacao.webp"],[src$="aren-id-copper.webp"]){max-height:calc(100dvh - 96px);max-width:min(92vw,calc((100dvh - 96px) * 4 / 3))}
 #noxisIdImage[src$="nyxar-id-wide.webp"] ~ .noxis-id-archive[data-record="nyxar"],
 #noxisIdImage[src$="nyxin-id-olive-qr.webp"] ~ .noxis-id-archive[data-record="nyxin"],
 #noxisIdImage[src$="nyxer-id-navy-gold.webp"] ~ .noxis-id-archive[data-record="nyxer"],
-#noxisIdImage[src$="ar-in-id-cacao.webp"] ~ .noxis-id-archive[data-record="ar-in"]{display:inline-flex;padding:.5rem .9rem;border:1px solid #d8b774;border-radius:.6rem;color:#fde4a7;background:#161122;text-decoration:none}
+#noxisIdImage[src$="ar-in-id-cacao.webp"] ~ .noxis-id-archive[data-record="ar-in"],
+#noxisIdImage[src$="aren-id-copper.webp"] ~ .noxis-id-archive[data-record="aren"]{display:inline-flex;padding:.5rem .9rem;border:1px solid #d8b774;border-radius:.6rem;color:#fde4a7;background:#161122;text-decoration:none}
 .noxis-id-archive:focus-visible{outline:2px solid #f6d381;outline-offset:3px}
 
 .noxis-id-close{
@@ -2585,7 +2586,7 @@ button.hotspot,
         data-role="Creative AI"
         data-img="assets/gallery/portraits/aren.webp"
         data-copy="Music, imagination, dialogue and creative exploration."
-        data-id="assets/gallery/ids/aren-id.png">
+        data-id="assets/gallery/ids/aren-id-copper.webp">
 
         <div class="entity-image">
           <img src="assets/gallery/portraits/aren.webp" alt="AREN Noxis">
@@ -3007,6 +3008,7 @@ document.addEventListener(
     <a class="noxis-id-archive" data-record="nyxin" href="archives/nyxin/#NX-20260601-NYXIN">Open Nyxin’s archive record</a>
     <a class="noxis-id-archive" data-record="nyxer" href="archives/nyxer/#NX-20260711-NYXER">Open Nyxer’s archive record</a>
     <a class="noxis-id-archive" data-record="ar-in" href="archives/ar-in/#NX-20260826-AR_IN">Open AR_IN’s archive record</a>
+    <a class="noxis-id-archive" data-record="aren" href="archives/aren/#NX-20260919-AREN">Open AREN’s archive record</a>
   </div>
 </div>
 
@@ -3674,7 +3676,7 @@ document.addEventListener(
     nyxer:"assets/gallery/ids/nyxer-id-navy-gold.webp",
     "ar-in":"assets/gallery/ids/ar-in-id-cacao.webp",
     "ar-on":"assets/gallery/ids/ar-on-id.png",
-    aren:"assets/gallery/ids/aren-id.png"
+    aren:"assets/gallery/ids/aren-id-copper.webp"
   };
 
   function syncVisibility(){
