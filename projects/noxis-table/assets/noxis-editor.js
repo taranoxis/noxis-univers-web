@@ -217,7 +217,7 @@ function renderNodes(){
     const img = isTrig
       ? `<span class="wic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>`
       : isAppr
-        ? `<span class="wimg" style="--tint:rgba(240,199,94,.12)"><img src="assets/img/tara.png" alt="Tara official portrait" draggable="false"></span>`
+        ? `<span class="wimg" style="--tint:rgba(240,199,94,.12)"><img src="../../assets/gallery/portraits/tara.webp" alt="Tara official portrait" draggable="false"></span>`
         : `<span class="wimg" style="--tint:${a.tint}"><img src="${PORTRAITS[n.agent]}" alt="${esc(a.name)} original portrait" draggable="false"></span>`;
     return `<div class="wnode${isTrig ? ' trigger' : ''}${sel ? ' selected' : ''}" id="wn-${n.id}" data-node="${n.id}"
         style="left:${n.x}px; top:${n.y}px; --ac:${accent}; --tint:${a ? a.tint : 'rgba(103,232,249,.12)'}">

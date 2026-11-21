@@ -8,13 +8,13 @@
    ============================================================ */
 'use strict';
 const PORTRAITS = {
-  tara:  'assets/img/tara.png',
-  nyxar: 'assets/img/nyxar.png',
-  ar_in: 'assets/img/ar_in.png',
-  nyxin: 'assets/img/nyxin.png',
-  nyxer: 'assets/img/nyxer.png',
-  ar_on: 'assets/img/ar_on.png',
-  aren:  'assets/img/aren.png',
+  tara:  '../../assets/gallery/portraits/tara.webp',
+  nyxar: '../../assets/gallery/portraits/nyxar.webp',
+  ar_in: '../../assets/gallery/portraits/ar-in.webp',
+  nyxin: '../../assets/gallery/portraits/nyxin.webp',
+  nyxer: '../../assets/gallery/portraits/nyxer.webp',
+  ar_on: '../../assets/gallery/portraits/ar-on.webp',
+  aren:  '../../assets/gallery/portraits/aren.webp',
 };
 const SEAL_DATA = 'assets/img/noxis-seal.png';   /* original NOXIS seal — crop-only isolation, pixels unchanged */
 

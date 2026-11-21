@@ -1450,8 +1450,8 @@ button.hotspot,
 }
 
 /* same fix in large profile view */
-.entity-profile-image img[src*="tara.png"],
-.entity-profile-image img[src*="nyxar.png"]{
+.entity-profile-image img[src*="tara.webp"],
+.entity-profile-image img[src*="nyxar.webp"]{
   object-fit:contain !important;
   object-position:center center !important;
   transform:scale(.92);
@@ -1470,7 +1470,7 @@ button.hotspot,
   transform:scale(.92) !important;
 }
 
-.entity-profile-image img[src*="nyxer.png"]{
+.entity-profile-image img[src*="nyxer.webp"]{
   object-fit:contain !important;
   object-position:center center !important;
   transform:scale(.88) !important;
@@ -2235,6 +2235,11 @@ button.hotspot,
 
 
 
+<style>
+.entity .entity-image img[src*="/portraits/"], .entity-profile-image img[src*="/portraits/"]{object-fit:contain;object-position:center}
+.nyra-id-button{display:block;width:100%;padding:0;border:0;background:transparent;cursor:pointer}
+.nyra-id-button:focus-visible{outline:2px solid var(--gold);outline-offset:-4px}
+</style>
 </head>
 
 <body>
@@ -2415,11 +2420,11 @@ button.hotspot,
 
       <!-- TARA -->
 
-      <article class="entity" data-name="Tara Noxis" data-role="Creator" data-img="assets/gallery/tara.png" data-copy="Artist, author and creator of the Noxis universe." data-id="assets/gallery/ids/tara-card.png">
+      <article class="entity" data-name="Tara Noxis" data-role="Creator" data-img="assets/gallery/portraits/tara.webp" data-copy="Artist, author and creator of the Noxis universe." data-id="assets/gallery/ids/tara-card.png">
 
         <div class="entity-image">
           <img
-            src="assets/gallery/tara.png"
+            src="assets/gallery/portraits/tara.webp"
             alt="Tara Noxis"
             style="object-position:center 10%;">
         </div>
@@ -2446,11 +2451,11 @@ button.hotspot,
 
       <!-- NYXAR -->
 
-      <article class="entity" data-name="Nyxar Noxis" data-role="Core" data-img="assets/gallery/nyxar.png" data-copy="The central strategic presence connecting systems and direction." data-id="assets/gallery/ids/nyxar-id.png">
+      <article class="entity" data-name="Nyxar Noxis" data-role="Core" data-img="assets/gallery/portraits/nyxar.webp" data-copy="The central strategic presence connecting systems and direction." data-id="assets/gallery/ids/nyxar-id.png">
 
         <div class="entity-image">
           <img
-            src="assets/gallery/nyxar.png"
+            src="assets/gallery/portraits/nyxar.webp"
             alt="Nyxar">
         </div>
 
@@ -2476,11 +2481,11 @@ button.hotspot,
 
       <!-- NYXIN -->
 
-      <article class="entity" data-name="Nyxin Noxis" data-role="Music" data-img="assets/gallery/nyxin.png" data-copy="Sound, music creation and the sonic side of the Noxis universe." data-id="assets/gallery/ids/nyxin-id.png">
+      <article class="entity" data-name="Nyxin Noxis" data-role="Music" data-img="assets/gallery/portraits/nyxin.webp" data-copy="Sound, music creation and the sonic side of the Noxis universe." data-id="assets/gallery/ids/nyxin-id.png">
 
         <div class="entity-image">
           <img
-            src="assets/gallery/nyxin.png"
+            src="assets/gallery/portraits/nyxin.webp"
             alt="Nyxin">
         </div>
 
@@ -2506,11 +2511,11 @@ button.hotspot,
 
       <!-- NYXER -->
 
-      <article class="entity" data-name="Nyxer Noxis" data-role="Business" data-img="assets/gallery/nyxer.png" data-copy="Catalog, business, organization and expansion." data-id="assets/gallery/ids/nyxer-id.png">
+      <article class="entity" data-name="Nyxer Noxis" data-role="Business" data-img="assets/gallery/portraits/nyxer.webp" data-copy="Catalog, business, organization and expansion." data-id="assets/gallery/ids/nyxer-id.png">
 
         <div class="entity-image">
           <img
-            src="assets/gallery/nyxer.png"
+            src="assets/gallery/portraits/nyxer.webp"
             alt="Nyxer">
         </div>
 
@@ -2536,11 +2541,11 @@ button.hotspot,
 
       <!-- AR IN -->
 
-      <article class="entity" data-name="AR_IN Noxis" data-role="Writing" data-img="assets/gallery/ar-in.png" data-copy="Writing, language, thought and creative reflection." data-id="assets/gallery/ids/ar-in-id.png">
+      <article class="entity" data-name="AR_IN Noxis" data-role="Writing" data-img="assets/gallery/portraits/ar-in.webp" data-copy="Writing, language, thought and creative reflection." data-id="assets/gallery/ids/ar-in-id.png">
 
         <div class="entity-image">
           <img
-            src="assets/gallery/ar-in.png"
+            src="assets/gallery/portraits/ar-in.webp"
             alt="AR_IN">
         </div>
 
@@ -2569,12 +2574,12 @@ button.hotspot,
       <article class="entity"
         data-name="AREN Noxis"
         data-role="Creative AI"
-        data-img="assets/gallery/aren.png"
+        data-img="assets/gallery/portraits/aren.webp"
         data-copy="Music, imagination, dialogue and creative exploration."
         data-id="assets/gallery/ids/aren-id.png">
 
         <div class="entity-image">
-          <img src="assets/gallery/aren.png" alt="AREN Noxis">
+          <img src="assets/gallery/portraits/aren.webp" alt="AREN Noxis">
         </div>
 
         <div class="entity-body">
@@ -2587,11 +2592,11 @@ button.hotspot,
 
       <!-- AR ON -->
 
-      <article class="entity" data-name="AR_ON Noxis" data-role="Structure" data-img="assets/gallery/ar-on.png" data-copy="The structural and legal side of the Noxis environment." data-id="assets/gallery/ids/ar-on-id.png">
+      <article class="entity" data-name="AR_ON Noxis" data-role="Structure" data-img="assets/gallery/portraits/ar-on.webp" data-copy="The structural and legal side of the Noxis environment." data-id="assets/gallery/ids/ar-on-id.png">
 
         <div class="entity-image">
           <img
-            src="assets/gallery/ar-on.png"
+            src="assets/gallery/portraits/ar-on.webp"
             alt="AR_ON">
         </div>
 
@@ -2612,6 +2617,19 @@ button.hotspot,
 
         </div>
 
+      </article>
+
+      <article class="entity" data-name="Nyra Noxis" data-role="Royal BBQ Inspector"
+        data-img="assets/gallery/portraits/nyra.webp" data-copy="Royal BBQ inspector, guardian of the mustard and final judge of the grill."
+        data-id="assets/gallery/ids/nyra-id.webp">
+        <button type="button" class="entity-image nyra-id-button" aria-label="View Nyra’s NOXIS ID">
+          <img src="assets/gallery/portraits/nyra.webp" alt="Nyra Noxis" width="1254" height="1254">
+        </button>
+        <div class="entity-body">
+          <div class="entity-role">Royal BBQ Inspector</div>
+          <h3>Nyra Noxis</h3>
+          <p>Guardian of the mustard and final judge of the grill.</p>
+        </div>
       </article>
 
     </div>

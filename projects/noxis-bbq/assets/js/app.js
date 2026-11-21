@@ -228,11 +228,11 @@
 
   /* ---------- personaje ---------- */
   var AVATARS = {
-    tara: "assets/characters/tara.webp", nyxer: "assets/characters/nyxer.webp",
-    nyxar: "assets/characters/nyxar.webp", aren: "assets/characters/aren.webp",
-    nyra: "assets/characters/nyra.webp", robot: "assets/characters/robot.webp",
-    aron: "assets/characters/aron.webp", arin: "assets/characters/arin.webp",
-    nyxin: "assets/characters/nyxin.webp",
+    tara: "../../assets/gallery/portraits/tara.webp", nyxer: "../../assets/gallery/portraits/nyxer.webp",
+    nyxar: "../../assets/gallery/portraits/nyxar.webp", aren: "../../assets/gallery/portraits/aren.webp",
+    nyra: "../../assets/gallery/portraits/nyra.webp", robot: "assets/characters/robot.webp",
+    aron: "../../assets/gallery/portraits/ar-on.webp", arin: "../../assets/gallery/portraits/ar-in.webp",
+    nyxin: "../../assets/gallery/portraits/nyxin.webp",
   };
   var EMOJI = { tara: "🌟", nyxer: "💸", nyxar: "🖥️", aren: "🔍", nyra: "👑", z230: "🐌", robot: "🤖", aron: "🌙", arin: "❄️", nyxin: "🔮" };
   var MAIN_KEYS = ["tara", "nyxer", "aren", "nyra", "z230", "robot"];
