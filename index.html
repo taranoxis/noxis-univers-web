@@ -1525,9 +1525,9 @@ button.hotspot,
 }
 
 .noxis-id-archive{display:none}
-.noxis-id-card:has(#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive-qr.webp"],[src$="nyxer-id-navy-gold.webp"],[src$="ar-in-id-cacao.webp"],[src$="aren-id-copper.webp"],[src$="ar-on-id-platinum.webp"])){flex-direction:column;gap:.55rem}
-#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive-qr.webp"],[src$="nyxer-id-navy-gold.webp"],[src$="ar-in-id-cacao.webp"],[src$="aren-id-copper.webp"],[src$="ar-on-id-platinum.webp"]){max-height:calc(100dvh - 96px);max-width:min(92vw,calc((100dvh - 96px) * 4 / 3))}
-#noxisIdImage[src$="nyxar-id-wide.webp"] ~ .noxis-id-archive[data-record="nyxar"],
+.noxis-id-card:has(#noxisIdImage:is([src$="nyxar-id-wide-qr.webp"],[src$="nyxin-id-olive-qr.webp"],[src$="nyxer-id-navy-gold.webp"],[src$="ar-in-id-cacao.webp"],[src$="aren-id-copper.webp"],[src$="ar-on-id-platinum.webp"])){flex-direction:column;gap:.55rem}
+#noxisIdImage:is([src$="nyxar-id-wide-qr.webp"],[src$="nyxin-id-olive-qr.webp"],[src$="nyxer-id-navy-gold.webp"],[src$="ar-in-id-cacao.webp"],[src$="aren-id-copper.webp"],[src$="ar-on-id-platinum.webp"]){max-height:calc(100dvh - 96px);max-width:min(92vw,calc((100dvh - 96px) * 4 / 3))}
+#noxisIdImage[src$="nyxar-id-wide-qr.webp"] ~ .noxis-id-archive[data-record="nyxar"],
 #noxisIdImage[src$="nyxin-id-olive-qr.webp"] ~ .noxis-id-archive[data-record="nyxin"],
 #noxisIdImage[src$="nyxer-id-navy-gold.webp"] ~ .noxis-id-archive[data-record="nyxer"],
 #noxisIdImage[src$="ar-in-id-cacao.webp"] ~ .noxis-id-archive[data-record="ar-in"],
@@ -2462,7 +2462,7 @@ button.hotspot,
 
       <!-- NYXAR -->
 
-      <article class="entity" data-name="Nyxar Noxis" data-role="Core" data-img="assets/gallery/portraits/nyxar.webp" data-copy="The central strategic presence connecting systems and direction." data-id="assets/gallery/ids/nyxar-id-wide.webp">
+      <article class="entity" data-name="Nyxar Noxis" data-role="Core" data-img="assets/gallery/portraits/nyxar.webp" data-copy="The central strategic presence connecting systems and direction." data-id="assets/gallery/ids/nyxar-id-wide-qr.webp">
 
         <div class="entity-image">
           <img
@@ -3674,7 +3674,7 @@ document.addEventListener(
 
   const ids = {
     nyxin:"assets/gallery/ids/nyxin-id-olive-qr.webp",
-    nyxar:"assets/gallery/ids/nyxar-id-wide.webp",
+    nyxar:"assets/gallery/ids/nyxar-id-wide-qr.webp",
     nyxer:"assets/gallery/ids/nyxer-id-navy-gold.webp",
     "ar-in":"assets/gallery/ids/ar-in-id-cacao.webp",
     "ar-on":"assets/gallery/ids/ar-on-id-platinum.webp",
