@@ -2668,6 +2668,7 @@ button.hotspot,
     <div class="choose-path-portal-wrap">
       <button class="portal-close-hotspot" id="portalCloseHotspot" onclick="document.getElementById('universe').classList.remove('open')" aria-label="Close portal"></button>
       <img src="assets/choose-your-path-final.png" alt="Choose Your Path" class="choose-path-portal-image">
+      <a id="booksHotspot" class="books-hotspot" href="books/" aria-label="Books archive"></a>
       <button id="discoverHotspot"
         class="discover-hotspot"
         aria-label="Open Discover"></button>
@@ -3130,6 +3131,21 @@ document.addEventListener(
 <style>
 .choose-path-portal-wrap{
   position:relative !important;
+}
+
+.books-hotspot{
+  position:absolute;
+  left:18%;
+  top:21%;
+  width:15.5%;
+  height:28%;
+  z-index:20;
+  border-radius:20px;
+}
+
+.books-hotspot:focus-visible{
+  outline:2px solid #F0C76D;
+  outline-offset:4px;
 }
 
 .discover-hotspot{
@@ -4762,7 +4778,7 @@ window.addEventListener("load", () => {
 <script>
 if (location.hash === '#booksPortal') {
   document.getElementById('universe').classList.add('open');
-  document.getElementById('booksPortal').focus();
+  document.getElementById('booksHotspot').focus();
 }
 </script>
 
