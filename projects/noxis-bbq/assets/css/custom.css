@@ -1,0 +1,43 @@
+/* NOXIS BBQ — stiluri specifice versiunii statice (integrare NOXIS UNIVERS) */
+
+/* Variabilele de font — definesc ce a injectat next/font în aplicația React */
+:root {
+  --font-geist-sans: Geist, "Geist Fallback";
+  --font-geist-mono: "Geist Mono", "Geist Mono Fallback";
+}
+
+body {
+  font-family: var(--font-geist-sans);
+  font-style: normal;
+}
+
+/* Blocarea scroll-ului cât timp ecranul de bun venit e vizibil */
+body.noxis-locked {
+  overflow: hidden;
+}
+
+/* Acordeonul Comandamentelor — tranziție de înălțime (fără Radix) */
+.noxis-acc-content {
+  overflow: hidden;
+  height: 0;
+  transition: height 0.2s ease-out;
+}
+.noxis-acc-content > div {
+  padding-bottom: 1rem;
+}
+
+/* Meniul de limbi (dropdown custom cu clasele Radix) */
+.noxis-lang-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 11rem;
+  z-index: 60;
+}
+
+/* Player muzică — sigiliul rămâne jos-dreapta, playerul jos-stânga */
+#noxis-player { display: none; }
+#noxis-player.noxis-on { display: block; }
+
+/* Ecranul de bun venit ascuns după intrare */
+#welcome.noxis-gone { display: none; }

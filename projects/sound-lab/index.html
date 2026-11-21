@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07121c"><title>NOXIS · The Sound Lab</title><link rel="stylesheet" href="style.css"><link rel="icon" href="../../assets/favicon.png"></head>
+<body>
+<header><a id="back" href="../../index.html">← BACK TO NOXIS</a><a class="brand" href="../../index.html"><span class="brand-mark">✧</span><span>NOXIS<small>THE SOUND LAB</small></span></a><span class="local"><i></i> LOCAL AUDIO</span></header>
+<main>
+<section class="intro"><div><p class="eyebrow">EXPERIMENTS / SOUND ALCHEMY</p><h1>A little echo.<br><em>A different universe.</em></h1><p class="lead">Bring your sound. Change its atmosphere. Keep what moves you.</p></div><div class="intro-note"><span>01 — LISTEN DIFFERENTLY</span><p>Voice, music, a tiny fragment.<br>The experiment begins with you.</p><div class="mini-wave" aria-hidden="true">▂ ▅ ▃ ▇ ▄ █ ▅ ▂ ▆ ▃ ▅ ▂</div></div></section>
+<div id="status" class="status" role="status" aria-live="polite">Ready when you are. Choose an audio file to begin.</div>
+<div class="workbench">
+<section class="panel source"><div class="panel-heading"><h2><span>01</span> Your signal</h2><span id="file-meta" class="meta">NOTHING LOADED</span></div>
+<label id="drop" class="drop" tabindex="0" role="button" aria-label="Choose an audio file"><input id="file" type="file" accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac" hidden><span class="upload-mark">↥</span><strong id="file-name">Drop your audio here</strong><span id="file-hint">or click to choose · up to 80 MB / 10 minutes</span></label>
+<div class="wave-wrap"><canvas id="wave" aria-label="Audio waveform and selected fragment"></canvas><span class="wave-caption">YOUR SOUND / YOUR EXPERIMENT</span></div>
+<fieldset id="transport-controls" disabled><div class="ab" role="group" aria-label="Compare audio"><button id="original" class="selected" type="button" aria-pressed="true"><span>A</span> Original</button><button id="effects" type="button" aria-pressed="false"><span>B</span> With effects</button></div>
+<div class="transport"><button id="play" class="primary" type="button">▶ Play</button><button id="pause" type="button">Ⅱ Pause</button><button id="stop" type="button">■ Stop</button><output id="clock">00:00 / 00:00</output></div>
+<label class="seek-label"><span class="sr-only">Position in selection</span><input id="seek" type="range" min="0" max="1" step="0.01" value="0"></label>
+<label class="volume">Output volume <output id="volume-value">70%</output><input id="volume" type="range" min="0" max="1" step="0.01" value="0.7"></label>
+</fieldset><p class="help">A/B keeps the same position. Selection, fades and output volume apply to both versions.</p>
+</section>
+<section class="panel atmosphere"><div class="panel-heading"><h2><span>02</span> Change the atmosphere</h2><span class="meta">LISTEN & EXPLORE</span></div>
+<fieldset id="effect-controls" disabled><div class="presets" role="group" aria-label="Sound presets"><button type="button" data-preset="clean">Clean</button><button type="button" data-preset="warm">Warm room</button><button type="button" data-preset="cosmic">Cosmic echo</button></div>
+<label class="effect"><span>Brightness <output id="tone-value">Open</output></span><input id="tone" type="range" min="0" max="100" value="100"><small>Turn down to soften the high frequencies.</small></label>
+<label class="effect"><span>Echo <output id="echo-value">0%</output></span><input id="echo" type="range" min="0" max="0.65" step="0.01" value="0"><small>A repeating reflection of your sound.</small></label>
+<label class="effect"><span>Echo spacing <output id="delay-value">280 ms</output></span><input id="delay" type="range" min="0.08" max="0.75" step="0.01" value="0.28"></label>
+<label class="effect"><span>Reverb <output id="reverb-value">0%</output></span><input id="reverb" type="range" min="0" max="0.6" step="0.01" value="0"><small>A room around the sound: from close to spacious.</small></label>
+<button id="reset" type="button" class="reset">↺ Reset effects</button></fieldset>
+<div class="lab-note"><span>TRY THIS</span><p>A spoken sentence + Warm room.<br>Then switch between A and B.<br>Same words. A different feeling.</p></div>
+</section>
+<section class="panel fragment"><div class="panel-heading"><h2><span>03</span> Choose your fragment</h2><span id="selection-meta" class="meta">SECONDS</span></div>
+<fieldset id="trim-controls" disabled><div class="number-grid"><label>Start · seconds<input id="start" type="number" min="0" step="0.01" value="0"></label><label>End · seconds<input id="end" type="number" min="0.05" step="0.01" value="30"></label><label>Fade in · seconds<input id="fadeIn" type="number" min="0" max="10" step="0.1" value="0.25"></label><label>Fade out · seconds<input id="fadeOut" type="number" min="0" max="10" step="0.1" value="0.6"></label></div><button id="full" class="subtle" type="button">Select whole file</button></fieldset><p class="help">The first 30 seconds are selected on load. Export up to 5 minutes at a time. Fades never exceed half the selection.</p>
+</section>
+<section class="panel keep"><div class="panel-heading"><h2><span>04</span> Keep the experiment</h2><span class="meta">WAV · 44.1 kHz · 16-BIT</span></div><p class="export-description">Download the selected fragment in the active A/B mode, with your volume and fades.</p><fieldset id="export-controls" disabled><label class="checkbox"><input id="protect" type="checkbox" checked> Reduce export level only if needed to prevent clipping</label><button id="export" class="primary export" type="button">↓ Export WAV <span id="export-mode">/ ORIGINAL</span></button></fieldset><a id="download" class="download" hidden>Download WAV again</a><p id="export-info" class="help">Your original file stays unchanged. Effect tails end with the selected fragment.</p></section>
+</div><footer><span>✧ NOXIS UNIVERS · TARA NOXIS</span><span>Audio stays in this page. No upload. No AI model.</span></footer>
+</main><script type="module" src="app.mjs"></script></body></html>

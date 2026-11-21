@@ -1,0 +1,38 @@
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #08121e;
+}
+main { max-width: 1450px; }
+header { text-align: left; padding: 38px 0; }
+h1,h2,h3 { font-family: 'Segoe UI', sans-serif; }
+h1 { font-size: 3rem; letter-spacing: -.04em; }
+.panel {
+  background: #102333;
+  border: 1px solid #30485a;
+  border-radius: 22px;
+  padding: 30px;
+  box-shadow: 0 14px 35px #0003;
+}
+.stat {
+  background: #0b1b2b;
+  border: 1px solid #30485a;
+  border-radius: 18px;
+  padding: 24px;
+}
+.stat strong { font-size: 1.8rem; }
+.tabs {
+  background: #0b1b2b;
+  padding: 10px;
+  border-radius: 16px;
+}
+.tabs button { border: 0; padding: 14px 18px; }
+button { min-height: 44px; }
+input,select { padding: 13px; }
+table { white-space: normal; }
+th,td { padding: 14px; }
+@media(max-width:750px) {
+  main { padding: 14px; }
+  .panel { padding: 18px; }
+  h1 { font-size: 2rem; }
+}

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NYXER TRADER — NOXIS UNIVERSE</title><link rel="icon" type="image/png" href="../../assets/favicon.png?v=4">
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 35% 0%,#103044,#060e19 70%);color:#e4eef4;font:15px/1.6 Arial,sans-serif;min-height:100vh}main{max-width:1200px;margin:auto;padding:24px clamp(16px,3vw,40px) 50px}a{color:#f3cb72}h1,h2,h3{font-family:Georgia,serif;color:#f3cb72}h1{font-size:clamp(2rem,5vw,3.4rem);margin:10px 0}h2{margin-top:0}header{text-align:center;padding:20px 0}.badge{border:1px solid #b28b42;border-radius:99px;padding:5px 14px;color:#f3cb72;font-size:12px;letter-spacing:.1em}.eyebrow{color:#f3cb72;letter-spacing:.14em;font-size:12px}.panel,.stat{border:1px solid #997738;border-radius:16px;background:linear-gradient(120deg,#102a38,#07111f);padding:20px}.panel{margin-top:18px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat strong{font-size:1.4rem;display:block;color:#f3cb72}.stat span{font-size:12px;color:#b3c7d3}.tabs,.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.tabs{margin:20px 0}.tabs button[aria-selected=true]{background:#e6bb63;color:#07111f}button,input,select{font:inherit;border-radius:9px;border:1px solid #8b784e;padding:9px 12px;background:#0b1826;color:#e4eef4}button{cursor:pointer}button:disabled{opacity:.45;cursor:wait}button:hover:not(:disabled){border-color:#f3cb72}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #f3cb72;outline-offset:3px}.primary{background:#e6bb63;color:#07111f;font-weight:bold}.danger{color:#ffb5b5}label{display:grid;gap:5px}form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}form .wide{grid-column:1/-1}input,select{width:100%;min-width:0}.muted{color:#b3c7d3;font-size:13px}.status{white-space:pre-wrap;overflow-wrap:anywhere;min-height:28px}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}th,td{text-align:left;border-bottom:1px solid #314755;padding:10px 8px;vertical-align:top}td.wrap{white-space:normal;min-width:180px;max-width:320px;overflow-wrap:anywhere}th{color:#f3cb72}.scroll{overflow:auto}.positive{color:#8cddb9}.negative{color:#ffb0b0}[hidden]{display:none!important}footer{text-align:center;color:#b3c7d3;font-size:12px;margin-top:30px}svg{max-width:100%;height:auto}.job{margin-top:12px}.small{font-size:12px}
+@media(max-width:750px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}form{grid-template-columns:1fr}.panel{padding:15px}.tabs button{flex:1 1 40%}}@media(max-width:400px){.stats{grid-template-columns:1fr 1fr}.stat{padding:12px}.stat strong{font-size:1.1rem}}
+</style><link rel="stylesheet" href="assets/nyxer-modern.css?v=2"></head><body><main>
+<nav><a href="../../index.html?discover=future">← BACK TO FUTURE PROJECTS</a></nav>
+<header><p class="eyebrow">NOXIS UNIVERSE / NYXER</p><h1>NYXER TRADER</h1><span class="badge">PAPER PORTFOLIO · LOCAL EUR LEDGER</span>
+<p>Public market data, simulated USD trades and a separate manual income/expense register in EUR.</p></header>
+<section class="panel" aria-label="Connection and operation status"><div class="row"><button id="refresh">Refresh saved state</button><span class="muted">Saved in the local NOXIS backend. The original ~/nyxer files are unchanged.</span></div><p id="connection" class="status" role="status">Connecting…</p><div id="job" class="status job" role="status"></div></section>
+<nav class="tabs" role="tablist" aria-label="Nyxer modules">
+<button role="tab" id="tab-paper" aria-controls="paper" aria-selected="true" data-tab="paper">Paper trading</button>
+<button role="tab" id="tab-market" aria-controls="market" aria-selected="false" data-tab="market">Market analysis</button>
+<button role="tab" id="tab-ledger" aria-controls="ledger" aria-selected="false" data-tab="ledger">Income & expenses</button>
+<button role="tab" id="tab-reports" aria-controls="reports" aria-selected="false" data-tab="reports">Reports</button>
+<button role="tab" id="tab-proposals" aria-controls="proposals" aria-selected="false" data-tab="proposals">Propuneri · APROB / RESPING</button></nav>
+<section id="paper" role="tabpanel" aria-labelledby="tab-paper">
+<div id="paper-stats" class="stats"></div>
+<div class="panel"><h2>Manual paper cycle</h2><button id="cycle" class="primary">Run one paper cycle</button><p class="muted">Fetches closed 1-hour candles for BTC/USD and ETH/USD and applies the SMA 10 / 30 trend rule. Repeating a cycle with the same closed candles does not repeat trades. No background trading loop.</p>
+<details><summary>Simulation settings and execution assumptions</summary><p id="settings" class="muted"></p><p class="muted">Entry, exit, stop-loss and take-profit checks use the latest closed candle's close, when a cycle is requested. They are not live exchange orders and do not reproduce intrahour fills or slippage. Missing hours are not replayed. The daily baseline is the first cycle observation of each UTC day. Simulated funds cannot be withdrawn.</p></details>
+<p id="halt" class="muted"></p></div>
+<div class="panel"><h2>Open simulated positions</h2><div id="positions" class="scroll"></div></div>
+</section>
+<section id="market" role="tabpanel" aria-labelledby="tab-market" hidden>
+<div class="panel"><h2>Market snapshot</h2><button id="market-refresh">Fetch market data only</button><p class="muted">This button refreshes public OHLC data without placing simulated trades. Prices below are closed-candle prices, not streaming quotes.</p><p id="market-date" class="muted"></p><div id="market-table" class="scroll"></div></div>
+</section>
+<section id="ledger" role="tabpanel" aria-labelledby="tab-ledger" hidden>
+<div class="panel"><h2>Manual EUR register</h2><p class="muted">Only records you enter here. No bank connection and no automatic import from the original CSV. Paper trades in USD are excluded.</p>
+<form id="entry-form"><label>Date<input type="date" id="entry-date" required></label><label>Type<select id="entry-type"><option value="income">Income</option><option value="expense">Expense</option></select></label>
+<label>Amount (EUR)<input id="entry-amount" inputmode="decimal" placeholder="12.50" maxlength="30" required></label><label>Category<input id="entry-category" maxlength="80" required placeholder="Music, software, equipment…"></label>
+<label class="wide">Description<input id="entry-description" maxlength="500" required></label><div class="wide"><button id="entry-submit" class="primary" type="submit">Save entry</button></div></form></div>
+<div class="panel"><h2>Recent entries</h2><p class="muted">Latest 100 entries. Voiding removes an entry from totals and keeps it in the history.</p><div id="ledger-table" class="scroll"></div><button id="export-ledger">Export full ledger CSV</button></div>
+</section>
+<section id="proposals" role="tabpanel" aria-labelledby="tab-proposals" hidden>
+<div class="panel"><h2>Propuneri de ordin</h2><p class="muted">Nyxer analizează și propune. Tu aprobi sau respingi. Nimic nu se execută fără aprobarea ta explicită. Propunerile sunt simulate (USD); ordinele reale (EUR) sunt dezactivate, pentru că nu există un broker verificat.</p>
+<form id="proposal-form"><label>Asset<select id="p-symbol"><option value="BTC">BTC</option><option value="ETH">ETH</option></select></label><label>Direcție<select id="p-side"><option value="buy">Cumpărare</option><option value="sell">Vânzare</option></select></label>
+<label>Cantitate<input id="p-qty" inputmode="decimal" placeholder="0.001" maxlength="20" required></label><label>Preț de referință (USD)<input id="p-price" inputmode="decimal" placeholder="65000" maxlength="20" required></label>
+<label class="wide">Motiv<input id="p-reason" maxlength="500" required></label><div class="wide row"><button id="p-create" class="primary" type="submit">Creează propunere simulată</button><button id="p-suggest" type="button">Cere sugestie din semnal</button></div></form>
+<p class="muted">Aprobarea cere să scrii exact „APROB” urmat de primele opt caractere ale ID-ului propunerii. Propunerile expiră după 60 de minute.</p>
+<div id="proposal-list" class="scroll"></div><p id="proposal-status" class="muted" role="status"></p></div>
+</section>
+<section id="reports" role="tabpanel" aria-labelledby="tab-reports" hidden>
+<div class="panel"><h2>Monthly cash flow · EUR</h2><div class="row"><label>Month<input type="month" id="month"></label><button id="report-refresh">Load monthly report</button><button id="export-month">Export monthly CSV</button></div><div id="report-stats" class="stats" style="margin-top:16px"></div><p class="muted">Balance means recorded income minus recorded expenses. It is not a tax calculation or a complete accounting statement.</p><p id="report-status" class="muted" role="status"></p></div>
+<div class="panel"><h2>Paper performance · USD</h2><div id="performance" class="stats"></div><div id="equity-chart"></div><p class="muted">Equity is cash plus open positions valued at the saved market snapshot. Net closed P/L includes the configured entry and exit fees. The curve contains manual cycle observations, not continuous performance.</p></div>
+<div class="panel"><h2>Closed simulated trades</h2><div id="trades" class="scroll"></div><button id="export-trades">Export trades CSV</button></div>
+<div class="panel"><h2>Tax module</h2><p>The separate legacy tax script is not connected here. Its fixed coefficients and exclusions need review before a web tax calculator is offered.</p></div>
+</section>
+<footer><p>Tara Noxis · NOXIS UNIVERSE · NYXER</p><a href="../../index.html?discover=future">← BACK TO FUTURE PROJECTS</a></footer>
+</main><script src="assets/nyxer-web.js?v=1"></script></body></html>
