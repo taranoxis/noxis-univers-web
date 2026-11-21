@@ -1736,6 +1736,9 @@ button.hotspot,
   letter-spacing:.11em !important;
 }
 
+.portal-grid a.portal-books{text-decoration:none;display:block}
+.portal-grid a.portal-books:focus-visible{outline:2px solid #F0C76D;outline-offset:4px}
+
 .portal-books{
   background:
     radial-gradient(circle at 18% 18%,
@@ -2687,14 +2690,14 @@ button.hotspot,
 
     <div class="portal-grid">
 
-      <article class="uportal portal-books" id="booksPortal">
+      <a class="uportal portal-books" id="booksPortal" href="books/">
         <div class="uportal-content">
           <div class="tag">ARCHIVE</div>
           <h3>Books</h3>
           <p>Tara Noxis books, ideas and reading spaces.</p>
           <strong>ENTER THE ARCHIVE →</strong>
         </div>
-      </article>
+      </a>
 
       <article class="uportal portal-friends" id="friendsPortal">
         <div class="uportal-content">
@@ -4755,6 +4758,13 @@ window.addEventListener("load", () => {
 </script>
 
 
+
+<script>
+if (location.hash === '#booksPortal') {
+  document.getElementById('universe').classList.add('open');
+  document.getElementById('booksPortal').focus();
+}
+</script>
 
 <script id="noxis-discover-return-route">
 (() => {
