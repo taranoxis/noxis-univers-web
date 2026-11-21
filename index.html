@@ -870,7 +870,20 @@ html,body{
 .home-tv-card strong{color:#ffdfa8;font-size:clamp(9px,1.5vmin,19px)}
 .home-tv-card small{margin-top:.22em;font-size:clamp(8px,1.3vmin,16px)}
 
-/* Bigger Universe button */
+@media (max-aspect-ratio: 4/5){
+  .home-tv-card{
+    left:50%;
+    top:81%;
+    width:min(12rem,70vw);
+    height:8%;
+    min-height:44px;
+    transform:translateX(-50%);
+  }
+  .home-tv-card strong{font-size:1rem}
+  .home-tv-card small{font-size:.85rem}
+}
+
+/* Bigger Universe button *//* Bigger Universe button */
 
 .bigger-hotspot{
   position:absolute;
