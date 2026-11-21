@@ -1525,10 +1525,10 @@ button.hotspot,
 }
 
 .noxis-id-archive{display:none}
-.noxis-id-card:has(#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive.webp"])){flex-direction:column;gap:.55rem}
-#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive.webp"]){max-height:calc(100dvh - 96px);max-width:min(92vw,calc((100dvh - 96px) * 4 / 3))}
+.noxis-id-card:has(#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive-qr.webp"])){flex-direction:column;gap:.55rem}
+#noxisIdImage:is([src$="nyxar-id-wide.webp"],[src$="nyxin-id-olive-qr.webp"]){max-height:calc(100dvh - 96px);max-width:min(92vw,calc((100dvh - 96px) * 4 / 3))}
 #noxisIdImage[src$="nyxar-id-wide.webp"] ~ .noxis-id-archive[data-record="nyxar"],
-#noxisIdImage[src$="nyxin-id-olive.webp"] ~ .noxis-id-archive[data-record="nyxin"]{display:inline-flex;padding:.5rem .9rem;border:1px solid #d8b774;border-radius:.6rem;color:#fde4a7;background:#161122;text-decoration:none}
+#noxisIdImage[src$="nyxin-id-olive-qr.webp"] ~ .noxis-id-archive[data-record="nyxin"]{display:inline-flex;padding:.5rem .9rem;border:1px solid #d8b774;border-radius:.6rem;color:#fde4a7;background:#161122;text-decoration:none}
 .noxis-id-archive:focus-visible{outline:2px solid #f6d381;outline-offset:3px}
 
 .noxis-id-close{
@@ -2488,7 +2488,7 @@ button.hotspot,
 
       <!-- NYXIN -->
 
-      <article class="entity" data-name="Nyxin Noxis" data-role="Music" data-img="assets/gallery/portraits/nyxin.webp" data-copy="Sound, music creation and the sonic side of the Noxis universe." data-id="assets/gallery/ids/nyxin-id-olive.webp">
+      <article class="entity" data-name="Nyxin Noxis" data-role="Music" data-img="assets/gallery/portraits/nyxin.webp" data-copy="Sound, music creation and the sonic side of the Noxis universe." data-id="assets/gallery/ids/nyxin-id-olive-qr.webp">
 
         <div class="entity-image">
           <img
@@ -3665,7 +3665,7 @@ document.addEventListener(
       !viewer || !idImage || !cards || !detail) return;
 
   const ids = {
-    nyxin:"assets/gallery/ids/nyxin-id-olive.webp",
+    nyxin:"assets/gallery/ids/nyxin-id-olive-qr.webp",
     nyxar:"assets/gallery/ids/nyxar-id-wide.webp",
     nyxer:"assets/gallery/ids/nyxer-id.png",
     "ar-in":"assets/gallery/ids/ar-in-id.png",
