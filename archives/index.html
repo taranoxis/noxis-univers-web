@@ -21,6 +21,11 @@
     dl div {margin:.7rem 0}
     dt {color:#dbbfee}
     dd {margin:0; overflow-wrap:anywhere}
+    .certificate {grid-column:1/-1; width:min(100%,52rem); margin:0 auto}
+    .certificate-art {position:relative}
+    .certificate .certificate-art img {max-width:none}
+    .certificate .certificate-art .certificate-qr {position:absolute; top:80.5%; left:87.3%; width:9.3%; image-rendering:pixelated}
+    .certificate figcaption {margin-top:.75rem}
     .note {color:#d8cce4}
     @media(max-width:40rem){.record{grid-template-columns:1fr}img{max-width:25rem}}
   </style>
@@ -42,7 +47,13 @@
         </dl>
         <p class="note">This record concerns an AI character in Tara Noxis’s creative universe.</p>
       </div>
-      <img src="../assets/gallery/nyxar.png" alt="Portrait of Nyxar Noxis" width="800" height="800">
+      <figure class="certificate">
+        <div class="certificate-art">
+          <img src="nyxar-certificate.webp" alt="Nyxar Noxis’s violet cosmic birth certificate, with his portrait and Tara Noxis’s seal" width="1254" height="1254">
+          <img class="certificate-qr" src="nyxar-qr.png" alt="QR code for this archive record" width="588" height="588">
+        </div>
+        <figcaption><a href="nyxar-qr.png" download>Download the QR code</a></figcaption>
+      </figure>
     </article>
   </main>
 </body>
