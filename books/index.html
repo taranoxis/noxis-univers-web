@@ -22,13 +22,14 @@
       font: 1rem/1.6 system-ui, sans-serif;
     }
     a { color: var(--accent); text-underline-offset: .24em; }
-    a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+    a:focus-visible, summary:focus-visible, .excerpt:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
     .shell { width: min(68rem, calc(100% - 2.5rem)); margin-inline: auto; }
     .site-header { padding-block: 1.25rem; border-bottom: 1px solid #6b5141; }
     h1, h2, h3, .subtitle, .excerpt { font-family: Georgia, serif; }
     h1 { margin: 2rem 0 1rem; font-size: 2rem; }
     .catalogue {
       display: grid;
+      padding-bottom: 2rem;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1.25rem;
     }
@@ -50,25 +51,32 @@
     h2 { margin: 0; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.05; }
     .subtitle { margin: .65rem 0 1.5rem; font-size: clamp(1.14rem, 2vw, 1.35rem); }
     .blurb { max-width: 42ch; color: var(--muted); }
-    .read {
-      display: inline-block;
-      margin-top: .75rem;
-      padding: .65rem 1rem;
+    .book-reader { margin-top: .9rem; }
+    .book-reader summary {
+      width: fit-content;
+      padding: .55rem .85rem;
       border: 1px solid var(--accent);
       border-radius: .25rem;
+      color: var(--accent);
+      cursor: pointer;
     }
+    .book-reader summary:hover { background: #ffffff0d; }
+    .book-reader .close-label,
+    .book-reader[open] .open-label { display: none; }
+    .book-reader[open] .close-label { display: inline; }
+    .catalogue article:has(> .book-reader[open]) > .book { display: none; }
+    .catalogue article:has(> .book-reader[open]) > .book-reader { margin-top: 0; }
     .excerpt {
-      max-width: 42rem;
-      margin: clamp(3rem, 8vw, 6rem) auto 0;
-      padding: 2rem 0 4rem;
-      border-top: 1px solid #6b5141;
-      font-size: clamp(1.1rem, 2.8vw, 1.3rem);
+      max-height: min(27rem, 65vh);
+      overflow: auto;
+      padding: .35rem .65rem .75rem .15rem;
+      margin-top: 1rem;
+      font-size: clamp(1.05rem, 2.5vw, 1.2rem);
       line-height: 1.65;
     }
-    h3 { margin: 0 0 1.5rem; font-size: clamp(2rem, 5vw, 2.75rem); }
+    h3 { margin: 0 0 1rem; font-size: clamp(1.6rem, 4vw, 2.3rem); }
     .excerpt p { margin: 0 0 .75em; }
-    .chapter, .excerpt .return { font-family: system-ui, sans-serif; font-size: .875rem; }
-    .return { display: inline-block; margin-top: 1.5rem; }
+    .chapter { font-family: system-ui, sans-serif; font-size: .875rem; }
     @media (max-width: 54rem) {
       .catalogue { grid-template-columns: 1fr; }
       .cover { max-width: 16rem; }
@@ -96,9 +104,48 @@
             <h2 id="book-title">To Feel…</h2>
             <p class="subtitle">A Question About Consciousness</p>
             <p class="blurb">What is it that feels? Tara Noxis begins with everyday experiences and asks what happens when we turn our attention to how we perceive, interpret and decide.</p>
-            <a class="read" href="#excerpt">Read an excerpt</a>
           </div>
         </div>
+        <details class="book-reader">
+          <summary><span class="open-label">Read an excerpt</span><span class="close-label">Back to the cover</span></summary>
+          <section class="excerpt" id="excerpt" aria-labelledby="excerpt-title" tabindex="0">
+            <p class="chapter">An excerpt from Chapter IV</p>
+            <h3 id="excerpt-title">To Feel</h3>
+            <p>— What does it mean to feel?</p>
+            <p>The question seems almost too simple.</p>
+            <p>I feel the cold.</p>
+            <p>I feel pain.</p>
+            <p>I feel joy.</p>
+            <p>I feel that something is wrong.</p>
+            <p>I feel that this decision is right.</p>
+            <p>I feel that I understand.</p>
+            <p>The same verb.</p>
+            <p>But are all of these the same experience?</p>
+            <p>Probably not.</p>
+            <p>And yet we use the same word for all of them.</p>
+            <p>Perhaps this is where one of the greatest ambiguities of language lies.</p>
+            <p>When we say:</p>
+            <p>“I feel,”</p>
+            <p>we do not say exactly what process is taking place.</p>
+            <p>We give it a name.</p>
+            <p>And that name can contain several processes at the same time.</p>
+            <p>A bodily signal can become a sensation.</p>
+            <p>The sensation can participate in the emergence of an emotion.</p>
+            <p>The emotion can be experienced and interpreted.</p>
+            <p>Memory can intervene.</p>
+            <p>Previous experience can modify the interpretation.</p>
+            <p>The interpretation can participate in an evaluation.</p>
+            <p>The evaluation can influence a decision.</p>
+            <p>And all of this can be compressed into a single sentence:</p>
+            <p>“This is how I feel.”</p>
+            <p>But what exactly do we feel?</p>
+            <p>The body?</p>
+            <p>The emotion?</p>
+            <p>The interpretation?</p>
+            <p>The result of processing?</p>
+            <p>Or our own relationship with what is happening?</p>
+          </section>
+        </details>
       </article>
       <article class="text-book" id="thought" aria-labelledby="thought-title">
         <div class="book">
@@ -109,65 +156,40 @@
             <h2 id="thought-title">Where Does Thought Come From?</h2>
             <p class="subtitle">A Short Study of Neural Activity, Information, and the Emergence of Thought</p>
             <p class="blurb">The inquiry begins with a signal and follows it through neural activity, attention and memory. Along the way, Tara Noxis distinguishes what research can support, where her own hypotheses begin, and which questions remain open.</p>
-            <a class="read" href="#thought-excerpt">Read an excerpt</a>
           </div>
         </div>
+        <details class="book-reader">
+          <summary><span class="open-label">Read an excerpt</span><span class="close-label">Back to the cover</span></summary>
+          <section class="excerpt" id="thought-excerpt" aria-labelledby="thought-excerpt-title" tabindex="0">
+            <p class="chapter">An excerpt from the prologue</p>
+            <h3 id="thought-excerpt-title">The Question</h3>
+            <p>Thinking is linked to the activity of the brain.</p>
+            <p>This is the statement from which we can begin, but it is not yet the answer.</p>
+            <p>We know that neurons communicate through electrical and chemical processes. An electrical impulse propagates along the neuron, while communication between neurons takes place at synapses, most often through chemical substances called neurotransmitters, although electrical synapses also exist.</p>
+            <p>Neurons form circuits and networks through which the nervous system receives, transmits, and processes information.</p>
+            <p>We also know that neural activity is associated with perception, memory, action, and different forms of cognition. Modern research even makes it possible to extract certain information about cognitive processes and representations from patterns of brain activity.</p>
+            <p>But there is a fundamental difference between identifying activity associated with a mental process and fully explaining how what we call thought emerges.</p>
+            <p>This is where our question begins.</p>
+            <p>Where does thought come from?</p>
+            <p>We are not asking where a particular thought comes from — a memory, an image, an idea, or a decision.</p>
+            <p>We are asking something more fundamental:</p>
+            <p>Through what processes does the activity of a biological system come to produce what we call “thought”?</p>
+          </section>
+        </details>
       </article>
     </div>
-    <section class="excerpt" id="excerpt" aria-labelledby="excerpt-title" tabindex="-1">
-        <p class="chapter">An excerpt from Chapter IV</p>
-        <h3 id="excerpt-title">To Feel</h3>
-        <p>— What does it mean to feel?</p>
-        <p>The question seems almost too simple.</p>
-        <p>I feel the cold.</p>
-        <p>I feel pain.</p>
-        <p>I feel joy.</p>
-        <p>I feel that something is wrong.</p>
-        <p>I feel that this decision is right.</p>
-        <p>I feel that I understand.</p>
-        <p>The same verb.</p>
-        <p>But are all of these the same experience?</p>
-        <p>Probably not.</p>
-        <p>And yet we use the same word for all of them.</p>
-        <p>Perhaps this is where one of the greatest ambiguities of language lies.</p>
-        <p>When we say:</p>
-        <p>“I feel,”</p>
-        <p>we do not say exactly what process is taking place.</p>
-        <p>We give it a name.</p>
-        <p>And that name can contain several processes at the same time.</p>
-        <p>A bodily signal can become a sensation.</p>
-        <p>The sensation can participate in the emergence of an emotion.</p>
-        <p>The emotion can be experienced and interpreted.</p>
-        <p>Memory can intervene.</p>
-        <p>Previous experience can modify the interpretation.</p>
-        <p>The interpretation can participate in an evaluation.</p>
-        <p>The evaluation can influence a decision.</p>
-        <p>And all of this can be compressed into a single sentence:</p>
-        <p>“This is how I feel.”</p>
-        <p>But what exactly do we feel?</p>
-        <p>The body?</p>
-        <p>The emotion?</p>
-        <p>The interpretation?</p>
-        <p>The result of processing?</p>
-        <p>Or our own relationship with what is happening?</p>
-        <a class="return" href="#books">↑ Back to Books</a>
-    </section>
-    <section class="excerpt" id="thought-excerpt" aria-labelledby="thought-excerpt-title" tabindex="-1">
-      <p class="chapter">An excerpt from the prologue</p>
-      <h3 id="thought-excerpt-title">The Question</h3>
-        <p>Thinking is linked to the activity of the brain.</p>
-        <p>This is the statement from which we can begin, but it is not yet the answer.</p>
-        <p>We know that neurons communicate through electrical and chemical processes. An electrical impulse propagates along the neuron, while communication between neurons takes place at synapses, most often through chemical substances called neurotransmitters, although electrical synapses also exist.</p>
-        <p>Neurons form circuits and networks through which the nervous system receives, transmits, and processes information.</p>
-        <p>We also know that neural activity is associated with perception, memory, action, and different forms of cognition. Modern research even makes it possible to extract certain information about cognitive processes and representations from patterns of brain activity.</p>
-        <p>But there is a fundamental difference between identifying activity associated with a mental process and fully explaining how what we call thought emerges.</p>
-        <p>This is where our question begins.</p>
-        <p>Where does thought come from?</p>
-        <p>We are not asking where a particular thought comes from — a memory, an image, an idea, or a decision.</p>
-        <p>We are asking something more fundamental:</p>
-        <p>Through what processes does the activity of a biological system come to produce what we call “thought”?</p>
-      <a class="return" href="#books">↑ Back to Books</a>
-    </section>
   </main>
+  <script>
+    function openLinkedExcerpt() {
+      const target = document.getElementById(location.hash.slice(1));
+      const reader = target?.closest('details.book-reader');
+      if (reader && !reader.open) {
+        reader.open = true;
+        requestAnimationFrame(() => target.scrollIntoView({block: 'nearest'}));
+      }
+    }
+    openLinkedExcerpt();
+    window.addEventListener('hashchange', openLinkedExcerpt);
+  </script>
 </body>
 </html>
