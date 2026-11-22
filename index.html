@@ -837,53 +837,62 @@ html,body{
   border-radius:12px;
 }
 
-/* Home card over the third feature in the artwork. */
+/* Keep the frame and clapperboard from the home artwork. */
 .home-tv-card{
   left:58.2%;
   top:84%;
   width:15.8%;
   height:9%;
-  display:grid;
-  grid-template-columns:27% minmax(0,1fr);
-  align-items:center;
-  gap:6%;
-  padding-inline:clamp(3px, .6vmin, 9px);
-  border:1px solid #a18054;
-  border-radius:clamp(4px, 1.5vmin, 16px);
-  background:linear-gradient(140deg,#171e27,#060910) !important;
-  color:#fff2d9;
-  font-family:Georgia,serif;
+  color:#f7eee0;
+  font-family:"Times New Roman",serif;
 }
-.scene .home-tv-card:hover{background:linear-gradient(140deg,#252d37,#0a0d16) !important}
-.home-tv-card:focus-visible{outline:2px solid #F0C76D;outline-offset:3px}
-.home-tv-icon{
-  display:grid;
-  place-items:center;
-  width:100%;
-  aspect-ratio:1;
-  border:1px solid #b08b52;
-  border-radius:50%;
-  color:#efc180;
-  font-size:clamp(10px,3vmin,36px)
+
+.home-tv-card:focus-visible{
+  outline:2px solid #F0C76D;
+  outline-offset:3px;
+  border-radius:12px;
 }
-.home-tv-card strong,.home-tv-card small{display:block;line-height:1.1}
-.home-tv-card strong{color:#ffdfa8;font-size:clamp(9px,1.5vmin,19px)}
-.home-tv-card small{margin-top:.22em;font-size:clamp(8px,1.3vmin,16px)}
+
+.home-tv-copy{
+  position:absolute;
+  top:20%;
+  right:4.8%;
+  bottom:15%;
+  left:35.5%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding-inline:2%;
+  background:linear-gradient(110deg,#061113 65%,#13262d);
+}
+
+.home-tv-card strong,
+.home-tv-card small{
+  display:block;
+  font-size:clamp(8px,1.45vh,18px);
+  line-height:1.06;
+}
+
+.home-tv-card small{margin-top:.15em}
 
 @media (max-aspect-ratio: 4/5){
-  .home-tv-card{
+  .scene .home-tv-card,
+  .scene .home-tv-card:hover{
     left:50%;
-    top:81%;
-    width:min(12rem,70vw);
-    height:8%;
-    min-height:44px;
+    top:79%;
+    width:min(15rem,74vw);
+    height:auto;
+    aspect-ratio:2.63;
     transform:translateX(-50%);
+    background-image:url("assets/Kosmisches Noxis Univers App-Erlebnis.png") !important;
+    background-size:632.91% 1111.11% !important;
+    background-position:69.12% 92.31% !important;
+    background-repeat:no-repeat !important;
   }
-  .home-tv-card strong{font-size:1rem}
-  .home-tv-card small{font-size:.85rem}
+  .home-tv-card strong,.home-tv-card small{font-size:clamp(11px,3.25vw,16px)}
 }
 
-/* Bigger Universe button *//* Bigger Universe button */
+/* Bigger Universe button */
 
 .bigger-hotspot{
   position:absolute;
@@ -2405,8 +2414,7 @@ button.hotspot,
     
     <a class="hotspot home-books-hotspot" href="books/" aria-label="Books"></a>
     <a class="hotspot home-tv-card" href="noxis-tv/">
-      <span class="home-tv-icon" aria-hidden="true">&#9654;</span>
-      <span><strong>NOXIS TV</strong><small>Video &amp; music</small></span>
+      <span class="home-tv-copy"><strong>NOXIS TV</strong><small>Play music with a<br>video or cover.</small></span>
     </a>
 
     <button
