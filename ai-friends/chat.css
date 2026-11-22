@@ -1,0 +1,114 @@
+.friends-hotspot {
+  position: absolute;
+  left: 67%;
+  top: 25%;
+  width: 15%;
+  height: 27%;
+  z-index: 20;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.friends-hotspot:focus-visible,
+#ai-friends :focus-visible {
+  outline: 2px solid #f0c76d;
+  outline-offset: 3px;
+}
+
+#ai-friends {
+  box-sizing: border-box;
+  width: min(36rem, calc(100% - 1.5rem));
+  max-height: calc(100dvh - 1.5rem);
+  padding: clamp(1rem, 4vw, 1.5rem);
+  border: 1px solid #b48a44;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at top right, #12344b, #07101b 65%);
+  color: #f5ebd7;
+  box-shadow: 0 0 36px #0a9dc337;
+  font: 1rem/1.45 system-ui, sans-serif;
+  color-scheme: dark;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+#ai-friends::backdrop { background: #030710d9; }
+#ai-friends [hidden] { display: none !important; }
+
+#ai-friends .friends-header,
+#ai-friends .friends-picker,
+#ai-friends .friends-actions {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+#ai-friends .friends-header { justify-content: space-between; }
+#ai-friends .friends-picker { margin: .75rem 0; }
+#ai-friends .friends-picker label { flex: 1; min-width: 0; }
+
+#friendsTitle {
+  margin: 0;
+  color: #f0c76d;
+  font: bold clamp(1.55rem, 6vw, 2rem)/1.15 Georgia, serif;
+}
+
+#ai-friends button,
+#ai-friends select,
+#ai-friends textarea {
+  border: 1px solid #426279;
+  border-radius: 8px;
+  background: #0c2031;
+  color: inherit;
+  font: inherit;
+  padding: .45rem .65rem;
+}
+
+#ai-friends button { min-height: 42px; cursor: pointer; }
+#ai-friends button:disabled { opacity: .5; cursor: default; }
+#ai-friends #friendsSend { border-color: #a67b3d; color: #fada91; }
+#ai-friends #friendsClose { min-width: 42px; font-size: 1.25rem; }
+
+#ai-friends select,
+#ai-friends textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: .25rem 0 .5rem;
+}
+
+#ai-friends textarea { resize: vertical; min-height: 3.6rem; max-height: 9rem; }
+
+#friendsPortrait {
+  object-fit: cover;
+  border: 1px solid #b48a44;
+  border-radius: 50%;
+}
+
+#friendsMessages {
+  min-height: 5rem;
+  height: min(25vh, 15rem);
+  overflow: auto;
+  border: 1px solid #294558;
+  border-radius: 10px;
+  padding: .5rem;
+  background: #060e18;
+}
+
+#friendsMessages p {
+  margin: .25rem 0;
+  padding: .5rem .65rem;
+  background: #132637;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+#friendsMessages strong { color: #9ce8f4; }
+#friendsVerification { max-width: 100%; }
+#friendsVerification:not(:empty) { margin-bottom: .5rem; }
+#ai-friends .friends-note,
+#friendsStatus { font-size: .875rem; color: #c3d0dd; }
+#friendsStatus { margin: .55rem 0 0; }
+#friendsStatus:empty { display: none; }
