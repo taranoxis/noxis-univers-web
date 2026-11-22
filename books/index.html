@@ -52,6 +52,20 @@
     .subtitle { margin: .65rem 0 1.5rem; font-size: clamp(1.14rem, 2vw, 1.35rem); }
     .blurb { max-width: 42ch; color: var(--muted); }
     .book-reader { margin-top: .9rem; }
+    .book-reader:not([open]) { display: inline-block; }
+    .buy {
+      display: inline-block;
+      margin-top: .9rem;
+      padding: .55rem .85rem;
+      border: 1px solid var(--accent);
+      border-radius: .25rem;
+      background: var(--accent);
+      color: #1a120d;
+      font-weight: 650;
+      text-decoration: none;
+    }
+    .book-reader:not([open]) + .buy { margin-inline-start: .35rem; }
+    .buy:hover { background: #f7cfaa; }
     .book-reader summary {
       width: fit-content;
       padding: .55rem .85rem;
@@ -146,6 +160,7 @@
             <p>Or our own relationship with what is happening?</p>
           </section>
         </details>
+        <a class="buy" href="https://payhip.com/b/tslHR">Buy on Payhip</a>
       </article>
       <article class="text-book" id="thought" aria-labelledby="thought-title">
         <div class="book">
