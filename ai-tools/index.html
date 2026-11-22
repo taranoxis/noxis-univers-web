@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Prepare a prompt for your book or music release on Payhip, Facebook or X.">
+  <title>AI Release Assistant · NOXIS Univers</title>
+  <link rel="icon" href="../assets/favicon.png?v=2">
+  <style>
+    :root{color-scheme:dark;--ink:#f7efe6;--muted:#c2c4d2;--gold:#edc582;--line:#625143;--panel:#111a26}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 78% 0%,#182b43,transparent 42rem),#070c15;color:var(--ink);font:1rem/1.55 system-ui,sans-serif}
+    nav,main{width:min(68rem,calc(100% - 2rem));margin-inline:auto}
+    nav{padding:1rem 0;border-bottom:1px solid var(--line)}
+    a{color:var(--gold);text-underline-offset:.23em}
+    header{margin-block:2.2rem 1.7rem}
+    h1,h2{margin:0;font-family:Georgia,serif;line-height:1.15}
+    h1{color:var(--gold);font-size:clamp(2.35rem,6vw,4.4rem)}
+    h2{font-size:1.55rem}
+    p{color:var(--muted)}
+    .columns{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;padding-bottom:2.5rem}
+    .panel{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:.7rem;padding:clamp(1rem,3vw,1.55rem)}
+    .fields{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+    label{display:block;margin-top:.85rem;font-weight:600}
+    input,textarea,select{width:100%;margin-top:.3rem;padding:.65rem .7rem;background:#090f1b;color:var(--ink);border:1px solid #6e6572;border-radius:.35rem;font:inherit}
+    textarea{resize:vertical;min-height:8rem}
+    #prompt{min-height:20rem}
+    .hint,.status{font-size:.9rem}
+    .actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}
+    button,.action{display:inline-block;padding:.58rem .9rem;border:1px solid var(--line);border-radius:.35rem;background:#182332;color:var(--gold);font:inherit;text-decoration:none;cursor:pointer}
+    button[type=submit]{border-color:var(--gold);background:var(--gold);color:#16100a;font-weight:650;margin-top:1rem}
+    button:disabled{opacity:.48;cursor:default}
+    :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+    .status{min-height:1.4em;margin-bottom:0}
+    @media(max-width:49rem){.columns{grid-template-columns:1fr}}
+  </style>
+  <script src="release.js" defer></script>
+</head>
+<body>
+  <nav aria-label="Site navigation"><a href="../">← NOXIS Univers</a></nav>
+  <main>
+    <header>
+      <h1>AI Release Assistant</h1>
+      <p>Prepare an AI prompt for your next book or music release.</p>
+    </header>
+    <div class="columns">
+      <form id="release-form" class="panel">
+        <h2>Release details</h2>
+        <div class="fields">
+          <label>Type<select id="kind"><option>Book</option><option>Music</option></select></label>
+          <label>Language<select id="language"><option>English</option><option>Romanian</option><option>German</option></select></label>
+        </div>
+        <label for="platform">Platform</label>
+        <select id="platform"><option>Payhip</option><option>Facebook</option><option>X</option></select>
+        <label for="title">Title</label>
+        <input id="title" required maxlength="180" placeholder="Book or song title">
+        <label for="source">Excerpt, lyrics or notes</label>
+        <textarea id="source" required maxlength="7000" placeholder="What is it about? Paste an excerpt, lyrics or a short description."></textarea>
+        <label for="link">Release link <small>(optional)</small></label>
+        <input id="link" type="url" pattern="https?://.+" maxlength="400" placeholder="https://…">
+        <button type="submit">Create prompt</button>
+      </form>
+      <section class="panel" aria-labelledby="prompt-heading">
+        <h2 id="prompt-heading">Your prompt</h2>
+        <p class="hint">Copy the prompt, open ChatGPT, then paste and send it to generate your text.</p>
+        <textarea id="prompt" aria-label="Editable prompt" placeholder="Your prompt will appear here."></textarea>
+        <div class="actions">
+          <button id="copy" type="button" disabled>Copy prompt</button>
+          <a class="action" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT</a>
+        </div>
+        <p id="status" class="status" role="status"></p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

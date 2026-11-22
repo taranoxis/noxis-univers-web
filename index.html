@@ -837,6 +837,18 @@ html,body{
   border-radius:12px;
 }
 
+.home-ai-hotspot{
+  left:42.2%;
+  top:84%;
+  width:15.7%;
+  height:9%;
+}
+.home-ai-hotspot:focus-visible{
+  outline:2px solid #F0C76D;
+  outline-offset:3px;
+  border-radius:12px;
+}
+
 /* Keep the frame and clapperboard from the home artwork. */
 .home-tv-card{
   left:58.2%;
@@ -876,11 +888,12 @@ html,body{
 .home-tv-card small{margin-top:.15em}
 
 @media (max-aspect-ratio: 4/5){
+  .scene .home-ai-hotspot,
+  .scene .home-ai-hotspot:hover,
   .scene .home-tv-card,
   .scene .home-tv-card:hover{
-    left:50%;
     top:79%;
-    width:min(15rem,74vw);
+    width:min(11rem,43vw);
     height:auto;
     aspect-ratio:2.63;
     transform:translateX(-50%);
@@ -889,7 +902,12 @@ html,body{
     background-position:69.12% 92.31% !important;
     background-repeat:no-repeat !important;
   }
-  .home-tv-card strong,.home-tv-card small{font-size:clamp(11px,3.25vw,16px)}
+  .scene .home-ai-hotspot,.scene .home-ai-hotspot:hover{
+    left:calc(50% - min(23vw, 6rem));
+    background-position:50.06% 92.31% !important;
+  }
+  .scene .home-tv-card{left:calc(50% + min(23vw, 6rem))}
+  .home-tv-card strong,.home-tv-card small{font-size:clamp(9px,2.75vw,13px)}
 }
 
 /* Bigger Universe button */
@@ -2413,6 +2431,7 @@ button.hotspot,
 
     
     <a class="hotspot home-books-hotspot" href="books/" aria-label="Books"></a>
+    <a class="hotspot home-ai-hotspot" href="ai-tools/" aria-label="AI Tools: AI Release Assistant"></a>
     <a class="hotspot home-tv-card" href="noxis-tv/">
       <span class="home-tv-copy"><strong>NOXIS TV</strong><small>Play music with a<br>video or cover.</small></span>
     </a>
