@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self'; media-src blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' blob:; media-src blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Play a video with your own soundtrack on NOXIS TV. Files stay on your device.">
+  <meta name="description" content="Pair a video or a cover image with music on NOXIS TV. Files stay on your device.">
   <title>NOXIS TV · Local Player</title>
   <link rel="icon" href="../assets/favicon.png?v=2">
   <style>
@@ -23,7 +23,7 @@
     .panel { padding: 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: .75rem; }
     .screen { display: grid; place-items: center; min-height: 12rem; aspect-ratio: 16 / 9; overflow: hidden; background: #05060d; border-radius: .4rem; }
     .screen p { grid-area: 1 / 1; margin: 1rem; color: var(--muted); text-align: center; }
-    .screen video { grid-area: 1 / 1; width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+    .screen video, .screen img { grid-area: 1 / 1; width: 100%; height: 100%; min-height: 0; object-fit: contain; }
     .transport { display: flex; align-items: center; gap: .65rem; flex-wrap: wrap; margin-top: .8rem; }
     button, .download { display: inline-block; padding: .55rem .8rem; color: var(--gold); border: 1px solid var(--line); background: #171b2a; border-radius: .35rem; font: inherit; cursor: pointer; text-decoration: none; }
     button:disabled { opacity: .5; cursor: default; }
@@ -40,17 +40,18 @@
     :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
     @media (max-width: 49rem) { .studio { grid-template-columns: 1fr; } }
   </style>
-  <script defer src="player.js"></script>
+  <script defer src="player.js?v=cover"></script>
 </head>
 <body>
   <nav aria-label="Site navigation"><a href="../">← NOXIS Univers</a></nav>
   <main>
     <h1>NOXIS TV</h1>
-    <p class="intro">Play a video with your own soundtrack. Your files stay on your device.</p>
+    <p class="intro">Pair a video or a cover image with your own music. Your files stay on your device.</p>
     <div class="studio">
       <section class="panel" aria-label="Preview">
         <div class="screen">
-          <p id="empty">Choose a video or a song to begin.</p>
+          <p id="empty">Choose a video, cover image or song to begin.</p>
+          <img id="cover" alt="Selected cover image" hidden>
           <video id="video" playsinline preload="metadata" hidden></video>
         </div>
         <audio id="music" preload="metadata"></audio>
@@ -62,12 +63,12 @@
       </section>
       <section class="panel" aria-labelledby="files">
         <h2 id="files">Your files</h2>
-        <label for="video-file">Video</label>
-        <input id="video-file" type="file" accept="video/*">
+        <label for="visual-file">Video or cover image</label>
+        <input id="visual-file" type="file" accept="video/*,image/*">
         <label for="music-file">Song</label>
         <input id="music-file" type="file" accept="audio/*">
         <button id="clear" type="button" disabled>Clear files</button>
-        <p class="hint">With both files selected, the song replaces the original video sound. The export ends with the video.</p>
+        <p class="hint">A cover stays on screen for the whole song. With a video, the song replaces its original audio and the export ends when the video ends.</p>
         <div class="actions">
           <button id="record" type="button" disabled>Make download</button>
           <button id="cancel" type="button" hidden>Cancel</button>

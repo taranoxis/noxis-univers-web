@@ -2,8 +2,9 @@
 
 const byId = (id) => document.getElementById(id);
 const video = byId('video');
+const cover = byId('cover');
 const music = byId('music');
-const videoFile = byId('video-file');
+const visualFile = byId('visual-file');
 const musicFile = byId('music-file');
 const play = byId('play');
 const seek = byId('seek');
@@ -23,6 +24,14 @@ function ready(media) {
   return Boolean(sources.has(media) && !media.error && Number.isFinite(media.duration) && media.duration > 0);
 }
 
+function coverReady() {
+  return Boolean(sources.has(cover) && cover.complete && cover.naturalWidth);
+}
+
+function canExport() {
+  return ready(music) && (ready(video) || coverReady());
+}
+
 function primary() {
   return ready(video) ? video : ready(music) ? music : null;
 }
@@ -37,16 +46,17 @@ function render() {
   const current = leader?.currentTime || 0;
   const duration = leader?.duration || 0;
   video.hidden = !ready(video);
-  byId('empty').hidden = ready(video);
-  byId('empty').textContent = ready(music) ? 'Song ready to play.' : 'Choose a video or a song to begin.';
+  cover.hidden = !coverReady();
+  byId('empty').hidden = !video.hidden || !cover.hidden;
+  byId('empty').textContent = ready(music) ? 'Song ready to play.' : 'Choose a video, cover image or song to begin.';
   byId('time').textContent = timeLabel(current) + ' / ' + timeLabel(duration);
   play.textContent = leader && !leader.paused ? 'Pause' : 'Play';
   seek.max = duration;
   seek.value = current;
   seek.disabled = play.disabled = !leader || Boolean(exportJob);
   clear.disabled = !sources.size || Boolean(exportJob);
-  videoFile.disabled = musicFile.disabled = Boolean(exportJob);
-  record.disabled = !canRecord || !ready(video) || !ready(music) || Boolean(exportJob);
+  visualFile.disabled = musicFile.disabled = Boolean(exportJob);
+  record.disabled = !canRecord || !canExport() || Boolean(exportJob);
   cancel.hidden = !exportJob;
 }
 
@@ -72,24 +82,28 @@ function replaceFile(media, file) {
     sources.set(media, url);
     media.src = url;
   }
-  media.load();
+  if (media !== cover) media.load();
 }
 
-function choose(input, media) {
-  input.addEventListener('change', () => {
+function handleSelection(picker, update) {
+  picker.addEventListener('change', () => {
     stopPlayback();
     removeDownload();
-    replaceFile(media, input.files[0]);
-    status.textContent = input.files.length ? 'Opening the file on this device…' : 'Choose a video or a song.';
+    const file = picker.files[0];
+    status.textContent = file ? 'Opening the file on this device…' : 'Choose a video, cover image or song.';
+    update(file);
     render();
   });
-  media.addEventListener('loadedmetadata', () => {
+}
+
+function watchMedia(media, label) {
+  media.addEventListener(media === cover ? 'load' : 'loadedmetadata', () => {
     status.textContent = 'Ready to play.';
     render();
   });
   media.addEventListener('error', () => {
     if (!sources.has(media)) return;
-    status.textContent = 'This browser could not open the ' + (media === video ? 'video' : 'song') + '. Try a different file.';
+    status.textContent = 'This browser could not open the ' + label + '. Try a different file.';
     render();
   });
   for (const event of ['timeupdate', 'pause', 'play', 'durationchange']) {
@@ -103,8 +117,15 @@ function syncSong() {
   if (Math.abs(music.currentTime - target) > 0.25) music.currentTime = target;
 }
 
-choose(videoFile, video);
-choose(musicFile, music);
+watchMedia(video, 'video');
+watchMedia(cover, 'cover image');
+watchMedia(music, 'song');
+handleSelection(visualFile, (file) => {
+  const isImage = file && (file.type.startsWith('image/') || (!file.type && /\.(png|jpe?g|webp|gif|avif|bmp|svg|heic|heif)$/i.test(file.name)));
+  replaceFile(video, isImage ? null : file);
+  replaceFile(cover, isImage ? file : null);
+});
+handleSelection(musicFile, (file) => replaceFile(music, file));
 for (const event of ['seeking', 'waiting', 'pause', 'ended']) {
   video.addEventListener(event, () => {
     if (primary() === video) music.pause();
@@ -150,8 +171,9 @@ clear.addEventListener('click', () => {
   stopPlayback();
   removeDownload();
   replaceFile(video, null);
+  replaceFile(cover, null);
   replaceFile(music, null);
-  videoFile.value = musicFile.value = '';
+  visualFile.value = musicFile.value = '';
   status.textContent = 'Files cleared.';
   render();
 });
@@ -167,7 +189,7 @@ function exportFormat() {
 }
 
 async function makeDownload() {
-  if (exportJob || !ready(video) || !ready(music)) return;
+  if (exportJob || !canExport()) return;
   const format = exportFormat();
   if (!format) {
     status.textContent = 'This browser can play your files but cannot export them.';
@@ -182,11 +204,17 @@ async function makeDownload() {
   render();
   status.textContent = 'Preparing export…';
 
-  const clip = document.createElement('video');
+  const clip = ready(video) ? document.createElement('video') : null;
   const song = document.createElement('audio');
-  clip.muted = true;
-  clip.playsInline = true;
-  clip.preload = song.preload = 'auto';
+  const clock = clip || song;
+  if (clip) {
+    clip.muted = true;
+    clip.playsInline = true;
+    clip.preload = 'auto';
+  }
+  song.preload = 'auto';
+  const mediaInputs = [[song, music]];
+  if (clip) mediaInputs.unshift([clip, video]);
   let context;
   let stream;
   let recorder;
@@ -194,24 +222,28 @@ async function makeDownload() {
   try {
     context = new AudioEngine();
     await context.resume();
-    const loaded = [clip, song].map((media, i) => new Promise((resolve, reject) => {
+    signal.throwIfAborted();
+    const loaded = mediaInputs.map(([media, source]) => new Promise((resolve, reject) => {
       media.addEventListener('loadeddata', resolve, { once: true, signal });
       media.addEventListener('error', reject, { once: true, signal });
       signal.addEventListener('abort', reject, { once: true });
-      media.src = sources.get(i === 0 ? video : music);
+      media.src = sources.get(source);
       media.load();
     }));
     await Promise.all(loaded);
     signal.throwIfAborted();
 
     const canvas = document.createElement('canvas');
-    const scale = Math.min(1, 1920 / clip.videoWidth, 1920 / clip.videoHeight);
-    canvas.width = Math.max(2, Math.floor(clip.videoWidth * scale / 2) * 2);
-    canvas.height = Math.max(2, Math.floor(clip.videoHeight * scale / 2) * 2);
+    const visual = clip || cover;
+    const width = clip ? clip.videoWidth : cover.naturalWidth;
+    const height = clip ? clip.videoHeight : cover.naturalHeight;
+    const scale = Math.min(1, 1920 / width, 1920 / height);
+    canvas.width = Math.max(2, Math.floor(width * scale / 2) * 2);
+    canvas.height = Math.max(2, Math.floor(height * scale / 2) * 2);
     const drawing = canvas.getContext('2d');
     const draw = () => {
-      drawing.drawImage(clip, 0, 0, canvas.width, canvas.height);
-      status.textContent = 'Making your video… ' + timeLabel(clip.currentTime) + ' / ' + timeLabel(clip.duration) + '. Keep this tab visible.';
+      drawing.drawImage(visual, 0, 0, canvas.width, canvas.height);
+      status.textContent = 'Making your video… ' + timeLabel(clock.currentTime) + ' / ' + timeLabel(clock.duration) + '. Keep this tab visible.';
       frame = requestAnimationFrame(draw);
     };
     const audioOutput = context.createMediaStreamDestination();
@@ -227,11 +259,11 @@ async function makeDownload() {
       recorder.addEventListener('stop', resolve, { once: true });
       recorder.addEventListener('error', reject, { once: true });
       signal.addEventListener('abort', reject, { once: true });
-      for (const media of [clip, song]) media.addEventListener('error', reject, { once: true, signal });
-      clip.addEventListener('ended', () => recorder.stop(), { once: true, signal });
+      for (const [media] of mediaInputs) media.addEventListener('error', reject, { once: true, signal });
+      clock.addEventListener('ended', () => recorder.stop(), { once: true, signal });
       draw();
       recorder.start(1000);
-      Promise.all([clip.play(), song.play()]).catch(reject);
+      Promise.all(mediaInputs.map(([media]) => media.play())).catch(reject);
     });
     signal.throwIfAborted();
     if (!parts.length) throw new Error('Empty recording');
@@ -247,7 +279,7 @@ async function makeDownload() {
   } finally {
     controller.abort();
     cancelAnimationFrame(frame);
-    clip.pause();
+    clip?.pause();
     song.pause();
     if (recorder && recorder.state !== 'inactive') recorder.stop();
     stream?.getTracks().forEach((track) => track.stop());
