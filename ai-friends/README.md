@@ -1,6 +1,6 @@
 # NOXIS AI Friends
 
-The existing AI Friends card opens a chat on the NOXIS homepage. The selector reads agent names, portraits and IDs from the existing Gallery entries. The Worker uses a fixed list of those IDs and builds each agent's persona from its public role. There is no Archive access from the chat.
+The existing AI Friends card opens a chat on the NOXIS homepage. The selector reads agent names, portraits and IDs from the existing Gallery entries. The Worker uses a fixed list of those IDs and uses conversation profiles based on the existing NOXIS Family configurations for Nyxar, Nyxin, Nyxer, AR_IN, AREN and AR_ON, and the Gallery profile for Nyra. The Worker uses hosted Gemma for inference. It does not call the local Ollama models or load NOXIS TABLE conversations, workspaces or tools. There is no Archive access from the chat.
 
 The site uses the public configuration in `config.js`. Empty values disable sending. The frontend holds each conversation in memory until the page is reloaded or the visitor clears the chat. Each request sends at most two previous exchanges and the new message to the Worker. The Worker validates Cloudflare Turnstile tokens, checks the site origin and applies per-IP rate limiting. It returns text only and does not store chat messages.
 
