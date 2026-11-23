@@ -43,21 +43,57 @@ function updateControls() {
   fileStatus.textContent = agent?.readingFile ? "Reading attachment…" : agent?.fileError || "";
 }
 
+const MAX_ORIGINAL_IMAGE_BYTES = 20_000_000;
+
+function readImageDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("This image could not be read."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function resizeImage(file) {
+  let image;
+  try {
+    image = await createImageBitmap(file);
+  } catch {
+    throw new Error("This image could not be opened. Try a different PNG, JPG or WebP.");
+  }
+
+  try {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) throw new Error("Image resizing is unavailable in this browser.");
+    for (const [edge, quality] of [[2048, 0.88], [1600, 0.82], [1200, 0.76], [900, 0.7]]) {
+      const scale = Math.min(1, edge / Math.max(image.width, image.height));
+      canvas.width = Math.max(1, Math.round(image.width * scale));
+      canvas.height = Math.max(1, Math.round(image.height * scale));
+      context.fillStyle = "#fff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", quality));
+      if (blob?.type === "image/jpeg" && blob.size <= MAX_IMAGE_BYTES) return blob;
+    }
+    throw new Error("This image could not be made small enough for chat.");
+  } finally {
+    image.close();
+  }
+}
+
 async function readAttachment(file) {
   const name = file.name.slice(0, 120);
   if (!file.size) throw new Error("This file is empty.");
   if (Object.hasOwn(IMAGE_TYPES, file.type)) {
-    if (file.size > MAX_IMAGE_BYTES) throw new Error("Choose an image under 1 MB.");
-    const url = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error("This image could not be read."));
-      reader.readAsDataURL(file);
-    });
-    if (!url.startsWith(`data:${file.type};base64,${IMAGE_TYPES[file.type]}`)) {
+    if (file.size > MAX_ORIGINAL_IMAGE_BYTES) throw new Error("Choose a photo of up to 20 MB.");
+    const header = await readImageDataUrl(file.slice(0, 16, file.type));
+    if (!header.startsWith(`data:${file.type};base64,${IMAGE_TYPES[file.type]}`)) {
       throw new Error("This file does not match its image format.");
     }
-    return { name, kind: "image", data: url };
+    const image = file.size > MAX_IMAGE_BYTES ? await resizeImage(file) : file;
+    const data = await readImageDataUrl(image);
+    return { name, kind: "image", data };
   }
   if (!/\.(txt|md|csv|tsv|json)$/i.test(file.name)) {
     throw new Error("Choose PNG, JPG, WebP, TXT, MD, CSV, TSV or JSON.");

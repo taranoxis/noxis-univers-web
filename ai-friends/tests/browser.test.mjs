@@ -161,6 +161,31 @@ test("desktop, tablet and mobile can open AI Friends, chat and return to the ori
     assert.equal(calls.at(-1).at(-1).content[1].image_url.url, "data:image/png;base64," + pixel);
     assert.equal(await page.locator('link[rel="icon"]').getAttribute("href"), "../noxis-favicon.svg");
 
+    const largePhoto = await page.evaluate(() => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1300;
+      canvas.height = 1000;
+      const context = canvas.getContext("2d");
+      const pixels = context.createImageData(canvas.width, canvas.height);
+      const row = new Uint8Array(canvas.width * 4);
+      for (let i = 0; i < pixels.data.length; i += row.length) {
+        crypto.getRandomValues(row);
+        pixels.data.set(row, i);
+      }
+      context.putImageData(pixels, 0, 0);
+      return canvas.toDataURL("image/png").split(",")[1];
+    });
+    const photo = Buffer.from(largePhoto, "base64");
+    assert.ok(photo.length > 1_000_000);
+    await file.setInputFiles({ name: "large-cover.png", mimeType: "image/png", buffer: photo });
+    await page.getByRole("button", { name: "Send", exact: true }).click();
+    const cover = page.getByRole("img", { name: "large-cover.png" });
+    await cover.waitFor();
+    const dataUrl = await cover.getAttribute("src");
+    assert.match(dataUrl, /^data:image\/jpeg;base64,/);
+    assert.ok(Buffer.from(dataUrl.split(",")[1], "base64").length <= 1_000_000);
+    assert.equal(calls.at(-1).at(-1).content[1].image_url.url, dataUrl);
+
     await page.getByRole("link", { name: "Back to Choose Your Path" }).click();
     await page.waitForURL(origin + prefix + "#choose-your-path");
     assert.equal(await page.locator("#ai-friends").count(), 0);
