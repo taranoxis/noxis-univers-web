@@ -85,7 +85,7 @@ test("every agent passes bounded context to the online model with its own person
     assert.equal(params.messages[0].role, "system");
     assert.ok(params.messages[0].content.startsWith("You are " + name));
     assert.deepEqual(params.messages.slice(1), messages);
-    assert.equal(params.max_completion_tokens, 420);
+    assert.equal(params.max_completion_tokens, 1_050);
     assert.deepEqual(params.chat_template_kwargs, { enable_thinking: false });
     assert.equal(params.store, false);
   }
@@ -103,7 +103,7 @@ test("malformed or over-limit input never reaches the online services", async t 
     { ...valid, messages: Array(7).fill(valid.messages[0]) }]) {
     assert.equal((await worker.fetch(request(data), env)).status, 400);
   }
-  assert.equal((await worker.fetch(request(" ".repeat(37_001)), env)).status, 413);
+  assert.equal((await worker.fetch(request(" ".repeat(80_001)), env)).status, 413);
   assert.equal((await worker.fetch(request(valid, { "Content-Type": "text/plain" }), env)).status, 415);
   assert.equal((await worker.fetch(request(null, { method: "GET" }), env)).status, 405);
   assert.equal((await worker.fetch(request(null, { method: "GET", path: "/archives" }), env)).status, 404);
@@ -139,4 +139,40 @@ test("missing bindings, empty inference and provider failures return unavailable
   const error = await worker.fetch(request(), env);
   assert.equal(error.status, 503);
   assert.deepEqual(await error.json(), { error: "Chat temporarily unavailable" });
+});
+
+test("long replies keep the poem and remove formatting markers from text", async t => {
+  const { env, run } = setup(t);
+  const longAnalysis = "Această imagine leagă scena de poveste. ".repeat(44).trim();
+  const output = [
+    "### Analiză Critică&#x20;",
+    "",
+    "*   \\*\\*Ritm\\*\\*: " + longAnalysis,
+    "---",
+    "**Rescrierea**",
+    "*Sub gheață pâlpâie o stea,*",
+    "iar luna tace lângă ea.",
+    "Trei ori patru se notează 3 * 4.",
+    "",
+    "```js",
+    "const stars = a * b;",
+    "",
+    "",
+    "const emphasis = \"**literal**\";",
+    "```",
+  ].join("\n");
+  run.mock.mockImplementationOnce(async () => ({ response: output }));
+  const result = await worker.fetch(request(), env);
+  assert.equal(result.status, 200);
+  const { reply } = await result.json();
+  assert.ok(reply.length > 1_600);
+  assert.match(reply, /^Analiză Critică\n\n• Ritm:/);
+  assert.match(reply, /Rescrierea\nSub gheață pâlpâie o stea,\niar luna tace lângă ea\./);
+  assert.match(reply, /3 \* 4/);
+  assert.match(reply, /const stars = a \* b;/);
+  assert.match(reply, /"\*\*literal\*\*"/);
+  const next = await worker.fetch(request({
+    ...valid, messages: [...valid.messages, { role: "assistant", content: reply }, valid.messages[0]],
+  }), env);
+  assert.equal(next.status, 200);
 });

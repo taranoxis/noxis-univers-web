@@ -1,6 +1,7 @@
 import { agents, persona } from "./agents.mjs";
 
-const MAX_BODY = 37_000;
+const MAX_BODY = 80_000;
+const MAX_REPLY = 4_200;
 const MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
@@ -48,8 +49,24 @@ function validMessages(messages) {
       const role = index % 2 ? "assistant" : "user";
       return message?.role === role && typeof message.content === "string"
         && message.content.trim().length > 0
-        && message.content.length <= (role === "user" ? 800 : 1_600);
+        && message.content.length <= (role === "user" ? 800 : MAX_REPLY);
     });
+}
+
+function plainText(content) {
+  return content.split(/^[ \t]*```[^\n]*$/m).map((part, i) => {
+    if (i % 2) return part;
+    return part
+      .replace(/&(?:nbsp|#0*32|#x0*20|#0*160|#x0*a0);/gi, " ")
+      .replace(/\\([*#_.-])/g, "$1")
+      .replace(/^[ \t]{0,3}#{1,6}[ \t]+/gm, "")
+      .replace(/^[ \t]{0,3}(?:\*{3,}|-{3,}|_{3,})[ \t]*$/gm, "")
+      .replace(/^([ \t]*)[*+-][ \t]+/gm, "$1• ")
+      .replace(/(\*{1,3})(?=\S)([^*\n]*?\S)\1(?!\*)/g, "$2")
+      .replace(/(_{1,2})(?=\S)([^_\n]*?\S)\1(?![\w_])/g, "$2")
+      .replace(/[ \t]+$/gm, "")
+      .replace(/\n{3,}/g, "\n\n");
+  }).join("").trim();
 }
 
 async function verify(env, origin, ip, token) {
@@ -123,13 +140,13 @@ export default {
           { role: "system", content: persona(agent) },
           ...data.messages.map(({ role, content }) => ({ role, content })),
         ],
-        max_completion_tokens: 420,
+        max_completion_tokens: 1_050,
         chat_template_kwargs: { enable_thinking: false },
         store: false,
         stream: false,
       });
       const content = result?.choices?.[0]?.message?.content ?? result?.response;
-      const reply = typeof content === "string" ? content.trim().slice(0, 1_600) : "";
+      const reply = typeof content === "string" ? plainText(content).slice(0, MAX_REPLY).trimEnd() : "";
       if (!reply) return json(503, { error: "AI unavailable" }, origin);
       return json(200, { reply }, origin);
     } catch {
