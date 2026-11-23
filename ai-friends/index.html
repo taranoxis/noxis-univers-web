@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NOXIS AI Friends</title>
+  <link rel="stylesheet" href="./chat.css">
+</head>
+<body class="friends-page">
+<main id="ai-friends" aria-labelledby="friendsTitle">
+  <header class="friends-header">
+    <h1 id="friendsTitle">AI Friends</h1>
+    <a class="friends-back" href="../#choose-your-path">Back to Choose Your Path</a>
+  </header>
+  <div class="friends-picker">
+    <img id="friendsPortrait" alt="" width="56" height="56" hidden>
+    <label>Choose a NOXIS agent
+      <select id="friendsAgent" autofocus>
+        <option value="">Choose an agent</option>
+      </select>
+    </label>
+  </div>
+  <div id="friendsMessages" role="log" aria-label="Conversation" tabindex="0" hidden></div>
+  <form id="friendsForm" hidden>
+    <p class="friends-note">You’re chatting with AI. Messages are sent to the online AI service. Please avoid sharing private information.</p>
+    <label for="friendsMessage">Your message</label>
+    <textarea id="friendsMessage" rows="2" maxlength="800" required></textarea>
+    <div id="friendsVerification"></div>
+    <div class="friends-actions">
+      <button id="friendsSend" type="submit" disabled>Send</button>
+      <button id="friendsSave" type="button" disabled>Save chat</button>
+      <button id="friendsClear" type="button">Clear chat</button>
+    </div>
+  </form>
+  <p id="friendsStatus" role="status"></p>
+</main>
+  <div id="friendsRoster" hidden>
+    <span data-agent-id="NX-20260519-NYXAR" data-name="Nyxar Noxis" data-img="../assets/gallery/portraits/nyxar.webp"></span>
+    <span data-agent-id="NX-20260601-NYXIN" data-name="Nyxin Noxis" data-img="../assets/gallery/portraits/nyxin.webp"></span>
+    <span data-agent-id="NX-20260711-NYXER" data-name="Nyxer Noxis" data-img="../assets/gallery/portraits/nyxer.webp"></span>
+    <span data-agent-id="NX-20260826-AR_IN" data-name="AR_IN Noxis" data-img="../assets/gallery/portraits/ar-in.webp"></span>
+    <span data-agent-id="NX-20260919-AREN" data-name="AREN Noxis" data-img="../assets/gallery/portraits/aren.webp"></span>
+    <span data-agent-id="NX-20260704-AR_ON" data-name="AR_ON Noxis" data-img="../assets/gallery/portraits/ar-on.webp"></span>
+    <span data-agent-id="NX-ID-NYRA" data-name="Nyra Noxis" data-img="../assets/gallery/portraits/nyra.webp"></span>
+  </div>
+  <script type="module" src="./chat.js"></script>
+</body>
+</html>

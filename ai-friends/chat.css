@@ -1,0 +1,199 @@
+.friends-hotspot {
+  position: absolute;
+  left: 67%;
+  top: 25%;
+  width: 15%;
+  height: 27%;
+  z-index: 20;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.friends-hotspot:focus-visible,
+#ai-friends :focus-visible {
+  outline: 2px solid #f0c76d;
+  outline-offset: 3px;
+}
+
+.friends-page {
+  margin: 0;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  background-color: #070e1d;
+  background-image:
+    radial-gradient(circle at 12px 19px, #c5e6ffa6 0 1px, transparent 1.7px),
+    radial-gradient(circle at 53px 37px, #8fbdfc80 0 .8px, transparent 1.4px),
+    radial-gradient(circle at 72px 94px, #f4d398a3 0 1px, transparent 1.6px),
+    radial-gradient(ellipse at 85% 20%, #183359 0%, transparent 55%),
+    radial-gradient(ellipse at 12% 92%, #1c2448 0%, transparent 58%);
+  background-size: 97px 109px, 179px 137px, 241px 197px, 100% 100%, 100% 100%;
+}
+
+#ai-friends {
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(62rem, calc(100% - 1.5rem));
+  height: min(53rem, calc(100dvh - 1.5rem));
+  max-height: calc(100dvh - 1.5rem);
+  padding: clamp(1rem, 4vw, 1.5rem);
+  border: 0;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at top right, #112b45c9, #060d19ea 68%);
+  color: #f3f5fb;
+  font: 1rem/1.6 system-ui, sans-serif;
+  color-scheme: dark;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+#ai-friends [hidden] { display: none !important; }
+
+#ai-friends .friends-header,
+#ai-friends .friends-picker,
+#ai-friends .friends-actions {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+#ai-friends .friends-header { justify-content: space-between; }
+#ai-friends .friends-back {
+  color: #b6eaff;
+  font-size: .875rem;
+  text-align: end;
+  text-underline-offset: .22em;
+}
+#ai-friends .friends-actions { flex-wrap: wrap; }
+#ai-friends .friends-header,
+#ai-friends .friends-picker,
+#friendsForm { flex-shrink: 0; }
+#ai-friends .friends-picker { margin: .75rem 0; }
+#ai-friends .friends-picker label { flex: 1; min-width: 0; }
+
+#friendsTitle {
+  margin: 0;
+  color: #f0c76d;
+  font: bold clamp(1.55rem, 6vw, 2rem)/1.15 Georgia, serif;
+}
+
+#ai-friends button,
+#ai-friends select,
+#ai-friends textarea {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #183149a8;
+  color: inherit;
+  font: inherit;
+  padding: .45rem .65rem;
+}
+
+#ai-friends button { min-height: 44px; cursor: pointer; }
+#ai-friends button:hover:enabled { background: #264965; }
+#ai-friends button:disabled { opacity: .5; cursor: default; }
+#ai-friends #friendsSend { background: #f0c76d; color: #18140d; }
+#ai-friends #friendsSend:hover:enabled { background: #ffdc92; }
+
+#ai-friends select,
+#ai-friends textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: .25rem 0 .5rem;
+}
+
+#ai-friends textarea { resize: vertical; min-height: 3.6rem; max-height: 9rem; }
+
+#friendsPortrait {
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+#friendsMessages {
+  min-height: 5rem;
+  flex: 1 0 5rem;
+  overflow: auto;
+  padding: .25rem .45rem .75rem .15rem;
+  overscroll-behavior: contain;
+}
+
+#friendsMessages .friends-message {
+  margin: .25rem 0 .9rem;
+  padding: .85rem clamp(.75rem, 2.8vw, 1.25rem);
+  border-radius: 12px;
+  background: #13283ed9;
+  min-width: 0;
+}
+
+#friendsMessages .friends-message-user {
+  margin-inline-start: clamp(.5rem, 5vw, 3.25rem);
+  background: #254563a6;
+}
+
+#friendsMessages .friends-message p {
+  margin: .3rem 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+#friendsMessages strong { color: #9ce8f4; }
+#friendsMessages .friends-message-user strong { color: #ffe2a6; }
+
+#ai-friends .friends-code {
+  margin: .7rem 0 .25rem;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #080f1e;
+}
+
+#ai-friends .friends-code-toolbar,
+#ai-friends .friends-code-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem;
+}
+
+#ai-friends .friends-code-toolbar {
+  justify-content: space-between;
+  padding: .4rem .6rem;
+  background: #20354b;
+  color: #b6eaff;
+  font-size: .875rem;
+}
+
+#ai-friends .friends-code-toolbar > span { overflow-wrap: anywhere; }
+#ai-friends .friends-code-toolbar button { padding: .25rem .6rem; }
+#ai-friends .friends-code-feedback:empty { display: none; }
+
+#ai-friends .friends-code pre {
+  margin: 0;
+  padding: .65rem .8rem;
+  max-height: min(16rem, 30dvh);
+  overflow: auto;
+  color: #e9f3fe;
+  font: .875rem/1.55 ui-monospace, Consolas, monospace;
+  white-space: pre;
+  tab-size: 4;
+}
+#friendsVerification { max-width: 100%; }
+#friendsVerification:not(:empty) { margin-bottom: .5rem; }
+#ai-friends .friends-note,
+#friendsStatus { font-size: .875rem; color: #c3d0dd; }
+#friendsStatus { margin: .55rem 0 0; }
+#friendsStatus:empty { display: none; }
+
+@media (max-width: 40rem) {
+  #ai-friends {
+    width: calc(100% - .75rem);
+    height: calc(100dvh - .75rem);
+    max-height: calc(100dvh - .75rem);
+    margin: auto;
+  }
+  #ai-friends .friends-actions { gap: .4rem; }
+  #ai-friends .friends-note { margin: .45rem 0; }
+}

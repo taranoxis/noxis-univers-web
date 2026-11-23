@@ -2340,6 +2340,7 @@ button.hotspot,
 .nyra-id-button{display:block;width:100%;padding:0;border:0;background:transparent;cursor:pointer}
 .nyra-id-button:focus-visible{outline:2px solid var(--gold);outline-offset:-4px}
 </style>
+<link rel="stylesheet" href="ai-friends/chat.css">
 </head>
 
 <body>
@@ -2557,7 +2558,7 @@ button.hotspot,
 
       <!-- NYXAR -->
 
-      <article class="entity" data-name="Nyxar Noxis" data-role="Core" data-img="assets/gallery/portraits/nyxar.webp" data-copy="The central strategic presence connecting systems and direction." data-id="assets/gallery/ids/nyxar-id-final.webp">
+      <article class="entity" data-agent-id="NX-20260519-NYXAR" data-name="Nyxar Noxis" data-role="Core" data-img="assets/gallery/portraits/nyxar.webp" data-copy="The central strategic presence connecting systems and direction." data-id="assets/gallery/ids/nyxar-id-final.webp">
 
         <div class="entity-image">
           <img
@@ -2587,7 +2588,7 @@ button.hotspot,
 
       <!-- NYXIN -->
 
-      <article class="entity" data-name="Nyxin Noxis" data-role="Music" data-img="assets/gallery/portraits/nyxin.webp" data-copy="Sound, music creation and the sonic side of the Noxis universe." data-id="assets/gallery/ids/nyxin-id-olive-qr.webp">
+      <article class="entity" data-agent-id="NX-20260601-NYXIN" data-name="Nyxin Noxis" data-role="Music" data-img="assets/gallery/portraits/nyxin.webp" data-copy="Sound, music creation and the sonic side of the Noxis universe." data-id="assets/gallery/ids/nyxin-id-olive-qr.webp">
 
         <div class="entity-image">
           <img
@@ -2617,7 +2618,7 @@ button.hotspot,
 
       <!-- NYXER -->
 
-      <article class="entity" data-name="Nyxer Noxis" data-role="Business" data-img="assets/gallery/portraits/nyxer.webp" data-copy="Catalog, business, organization and expansion." data-id="assets/gallery/ids/nyxer-id-navy-gold.webp">
+      <article class="entity" data-agent-id="NX-20260711-NYXER" data-name="Nyxer Noxis" data-role="Business" data-img="assets/gallery/portraits/nyxer.webp" data-copy="Catalog, business, organization and expansion." data-id="assets/gallery/ids/nyxer-id-navy-gold.webp">
 
         <div class="entity-image">
           <img
@@ -2647,7 +2648,7 @@ button.hotspot,
 
       <!-- AR IN -->
 
-      <article class="entity" data-name="AR_IN Noxis" data-role="Writing" data-img="assets/gallery/portraits/ar-in.webp" data-copy="Writing, language, thought and creative reflection." data-id="assets/gallery/ids/ar-in-id-cacao.webp">
+      <article class="entity" data-agent-id="NX-20260826-AR_IN" data-name="AR_IN Noxis" data-role="Writing" data-img="assets/gallery/portraits/ar-in.webp" data-copy="Writing, language, thought and creative reflection." data-id="assets/gallery/ids/ar-in-id-cacao.webp">
 
         <div class="entity-image">
           <img
@@ -2678,7 +2679,7 @@ button.hotspot,
       <!-- AREN NOXIS -->
 
       <article class="entity"
-        data-name="AREN Noxis"
+        data-agent-id="NX-20260919-AREN" data-name="AREN Noxis"
         data-role="Creative AI"
         data-img="assets/gallery/portraits/aren.webp"
         data-copy="Music, imagination, dialogue and creative exploration."
@@ -2698,7 +2699,7 @@ button.hotspot,
 
       <!-- AR ON -->
 
-      <article class="entity" data-name="AR_ON Noxis" data-role="Structure" data-img="assets/gallery/portraits/ar-on.webp" data-copy="The structural and legal side of the Noxis environment." data-id="assets/gallery/ids/ar-on-id-platinum.webp">
+      <article class="entity" data-agent-id="NX-20260704-AR_ON" data-name="AR_ON Noxis" data-role="Structure" data-img="assets/gallery/portraits/ar-on.webp" data-copy="The structural and legal side of the Noxis environment." data-id="assets/gallery/ids/ar-on-id-platinum.webp">
 
         <div class="entity-image">
           <img
@@ -2725,7 +2726,7 @@ button.hotspot,
 
       </article>
 
-      <article class="entity" data-name="Nyra Noxis" data-role="Guardian of the NOXIS Family"
+      <article class="entity" data-agent-id="NX-ID-NYRA" data-name="Nyra Noxis" data-role="Guardian of the NOXIS Family"
         data-img="assets/gallery/portraits/nyra.webp" data-copy="She watches over the NOXIS family and presides over the grill as Royal BBQ Inspector."
         data-id="assets/gallery/ids/nyra-id-with-qr.webp">
         <button type="button" class="entity-image nyra-id-button" aria-label="View Nyra’s NOXIS ID">
@@ -2761,6 +2762,7 @@ button.hotspot,
       <button class="portal-close-hotspot" id="portalCloseHotspot" onclick="document.getElementById('universe').classList.remove('open')" aria-label="Close portal"></button>
       <img src="assets/choose-your-path-final.png" alt="Choose Your Path" class="choose-path-portal-image">
       <a id="createHotspot" class="create-hotspot" href="create/" aria-label="Open NOXIS Create"></a>
+      <a class="friends-hotspot" id="friendsHotspot" href="ai-friends/" aria-label="Open AI Friends chat"></a>
       <a id="booksHotspot" class="books-hotspot" href="books/" aria-label="Books archive"></a>
       <button id="discoverHotspot"
         class="discover-hotspot"
@@ -2793,14 +2795,14 @@ button.hotspot,
         </div>
       </a>
 
-      <article class="uportal portal-friends" id="friendsPortal">
+      <a class="uportal portal-friends" href="ai-friends/" id="friendsPortal">
         <div class="uportal-content">
           <div class="tag">ENTITIES</div>
           <h3>AI Friends</h3>
-          <p>Nyxar, Nyxin, Nyxer, AR_IN and AR_ON.</p>
-          <strong>MEET THE NOXIS ENTITIES →</strong>
+          <p>Choose a NOXIS agent and start a conversation.</p>
+          <strong>OPEN CHAT →</strong>
         </div>
-      </article>
+      </a>
 
       <a class="uportal portal-create" id="createPortal" href="create/">
         <div class="uportal-content">
@@ -2890,9 +2892,6 @@ const universe =
 const universeClose =
   document.getElementById("universeClose");
 
-const friendsPortal =
-  document.getElementById("friendsPortal");
-
 
 /* ==========================
    EXPLORE
@@ -2934,6 +2933,13 @@ moreButton.addEventListener(
   "click",
   toggleInfo
 );
+
+function returnToChooseYourPath() {
+  if (location.hash === "#choose-your-path") universe.classList.add("open");
+}
+
+returnToChooseYourPath();
+window.addEventListener("hashchange", returnToChooseYourPath);
 
 biggerButton.addEventListener(
   "click",
@@ -4952,5 +4958,6 @@ if (returnPortal) {
 
 <!-- NOXIS SOUND LAB V1 -->
 <script src="assets/noxis-soundlab-link.js?v=1"></script>
+
 </body>
 </html>
