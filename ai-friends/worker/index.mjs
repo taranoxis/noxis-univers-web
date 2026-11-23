@@ -2,9 +2,10 @@ import { agents, persona } from "./agents.mjs";
 import { messageParts } from "../message-parts.mjs";
 import { IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_TEXT_CHARS } from "../attachments.mjs";
 
-const MAX_BODY = 80_000;
+const MAX_BODY = 250_000;
 const MAX_ATTACHMENT_BODY = 4_400_000;
-const MAX_REPLY = 4_200;
+const MAX_MESSAGE = 4_000;
+const MAX_REPLY = 12_000;
 const MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
@@ -82,7 +83,7 @@ function validMessages(messages) {
       return message?.role === role && typeof message.content === "string"
         && (message.content.trim().length > 0 || (role === "user" && message.attachment !== undefined))
         && (message.attachment === undefined || (role === "user" && validAttachment(message.attachment)))
-        && message.content.length <= (role === "user" ? 800 : MAX_REPLY);
+        && message.content.length <= (role === "user" ? MAX_MESSAGE : MAX_REPLY);
     });
 }
 
@@ -189,7 +190,7 @@ export default {
           { role: "system", content: persona(agent) + "\nFor source code, place each snippet inside triple-backtick fences with its language identifier. Keep the surrounding prose as plain text." + attachmentInstruction },
           ...data.messages.map(modelMessage),
         ],
-        max_completion_tokens: 1_050,
+        max_completion_tokens: 3_000,
         chat_template_kwargs: { enable_thinking: false },
         store: false,
         stream: false,

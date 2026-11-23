@@ -85,7 +85,7 @@ test("every agent passes bounded context to the online model with its own person
     assert.equal(params.messages[0].role, "system");
     assert.ok(params.messages[0].content.startsWith("You are " + name));
     assert.deepEqual(params.messages.slice(1), messages);
-    assert.equal(params.max_completion_tokens, 1_050);
+    assert.equal(params.max_completion_tokens, 3_000);
     assert.deepEqual(params.chat_template_kwargs, { enable_thinking: false });
     assert.equal(params.store, false);
   }
@@ -99,7 +99,7 @@ test("malformed or over-limit input never reaches the online services", async t 
   for (const data of ["{", null, [], { ...valid, agentId: "__proto__" },
     { ...valid, token: "" },
     { ...valid, messages: [{ role: "system", content: "Other role" }] },
-    { ...valid, messages: [{ role: "user", content: "x".repeat(801) }] },
+    { ...valid, messages: [{ role: "user", content: "x".repeat(4_001) }] },
     { ...valid, messages: Array(7).fill(valid.messages[0]) }]) {
     assert.equal((await worker.fetch(request(data), env)).status, 400);
   }
@@ -113,7 +113,7 @@ test("malformed or over-limit input never reaches the online services", async t 
     }), env);
     assert.equal(response.status, 400);
   }
-  assert.equal((await worker.fetch(request(" ".repeat(80_001)), env)).status, 413);
+  assert.equal((await worker.fetch(request(" ".repeat(250_001)), env)).status, 413);
   assert.equal((await worker.fetch(request(valid, { "Content-Type": "text/plain" }), env)).status, 415);
   assert.equal((await worker.fetch(request(null, { method: "GET" }), env)).status, 405);
   assert.equal((await worker.fetch(request(null, { method: "GET", path: "/archives" }), env)).status, 404);
@@ -153,7 +153,7 @@ test("missing bindings, empty inference and provider failures return unavailable
 
 test("long replies keep the poem and remove formatting markers from text", async t => {
   const { env, run } = setup(t);
-  const longAnalysis = "Această imagine leagă scena de poveste. ".repeat(44).trim();
+  const longAnalysis = "Această imagine leagă scena de poveste. ".repeat(240).trim();
   const output = [
     "### Analiză Critică&#x20;",
     "",
@@ -172,10 +172,12 @@ test("long replies keep the poem and remove formatting markers from text", async
     "```",
   ].join("\n");
   run.mock.mockImplementationOnce(async () => ({ response: output }));
-  const result = await worker.fetch(request(), env);
+  const longRequest = { role: "user", content: "a".repeat(4_000) };
+  const result = await worker.fetch(request({ ...valid, messages: [longRequest] }), env);
   assert.equal(result.status, 200);
+  assert.deepEqual(run.mock.calls[0].arguments[1].messages.at(-1), longRequest);
   const { reply } = await result.json();
-  assert.ok(reply.length > 1_600);
+  assert.ok(reply.length > 9_000);
   assert.match(reply, /^Analiză Critică\n\n• Ritm:/);
   assert.match(reply, /Rescrierea\nSub gheață pâlpâie o stea,\niar luna tace lângă ea\./);
   assert.match(reply, /3 \* 4/);
