@@ -25,15 +25,7 @@
   padding: clamp(1rem, 4vw, 1.5rem);
   border: 0;
   border-radius: 18px;
-  background-color: #070e1d;
-  background-image:
-    radial-gradient(circle at 12px 19px, #c5e6ffa6 0 1px, transparent 1.7px),
-    radial-gradient(circle at 53px 37px, #8fbdfc80 0 .8px, transparent 1.4px),
-    radial-gradient(circle at 72px 94px, #f4d398a3 0 1px, transparent 1.6px),
-    radial-gradient(circle at 31px 69px, #ffffff70 0 .6px, transparent 1.2px),
-    radial-gradient(ellipse at 85% 12%, #183359 0%, transparent 55%),
-    radial-gradient(ellipse at 12% 92%, #1c2448 0%, transparent 58%);
-  background-size: 97px 109px, 179px 137px, 241px 197px, 73px 127px, 100% 100%, 100% 100%;
+  background: radial-gradient(ellipse at top right, #112b45c9, #060d19ea 68%);
   color: #f3f5fb;
   font: 1rem/1.6 system-ui, sans-serif;
   color-scheme: dark;
@@ -46,10 +38,7 @@
   flex-direction: column;
 }
 
-#ai-friends::backdrop {
-  background: #030710a6;
-  backdrop-filter: blur(3px);
-}
+#ai-friends::backdrop { background: #03071049; }
 #ai-friends [hidden] { display: none !important; }
 
 #ai-friends .friends-header,
