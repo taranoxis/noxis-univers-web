@@ -1,4 +1,5 @@
 import { endpoint, siteKey } from "./config.js";
+import { messageParts } from "./message-parts.mjs";
 
 const dialog = document.getElementById("ai-friends");
 const picker = document.getElementById("friendsAgent");
@@ -30,11 +31,82 @@ function updateControls() {
   clear.disabled = busy;
 }
 
+const codeFormats = new Map([
+  ["html", ["HTML", "html"]], ["css", ["CSS", "css"]],
+  ["js", ["JavaScript", "js"]], ["javascript", ["JavaScript", "js"]],
+  ["ts", ["TypeScript", "ts"]], ["typescript", ["TypeScript", "ts"]],
+  ["py", ["Python", "py"]], ["python", ["Python", "py"]],
+  ["json", ["JSON", "json"]], ["sql", ["SQL", "sql"]],
+  ["sh", ["Shell", "sh"]], ["bash", ["Bash", "sh"]],
+  ["xml", ["XML", "xml"]], ["svg", ["SVG", "svg"]],
+]);
+
+function downloadText(filename, content) {
+  const url = URL.createObjectURL(new Blob([content], { type: "text/plain;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  dialog.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1_000);
+}
+
+function codeBlock({ code, language }) {
+  const [label, extension] = codeFormats.get(language) ?? [language.slice(0, 32) || "Code", "txt"];
+  const block = document.createElement("div");
+  block.className = "friends-code";
+  const toolbar = document.createElement("div");
+  toolbar.className = "friends-code-toolbar";
+  const title = document.createElement("span");
+  title.textContent = label;
+  const actions = document.createElement("div");
+  actions.className = "friends-code-actions";
+  const copy = document.createElement("button");
+  copy.type = "button";
+  copy.textContent = "Copy Code";
+  const feedback = document.createElement("span");
+  feedback.className = "friends-code-feedback";
+  feedback.setAttribute("role", "status");
+  copy.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      feedback.textContent = "Copied";
+    } catch {
+      feedback.textContent = "Copy unavailable. Select the code or download it.";
+    }
+  });
+  const download = document.createElement("button");
+  download.type = "button";
+  download.textContent = "Download";
+  download.addEventListener("click", () => downloadText("noxis-code." + extension, code));
+  const pre = document.createElement("pre");
+  pre.tabIndex = 0;
+  pre.setAttribute("aria-label", label + " source code");
+  const source = document.createElement("code");
+  source.textContent = code;
+  pre.append(source);
+  actions.append(copy, download, feedback);
+  toolbar.append(title, actions);
+  block.append(toolbar, pre);
+  return block;
+}
+
 function appendMessage(agent, { role, content }) {
-  const line = document.createElement("p");
+  const line = document.createElement("article");
+  line.className = "friends-message friends-message-" + role;
   const name = document.createElement("strong");
   name.textContent = role === "assistant" ? agent.name : "You";
-  line.append(name, document.createTextNode("\n" + content));
+  line.append(name);
+  const parts = role === "assistant" ? messageParts(content) : [{ text: content }];
+  for (const part of parts) {
+    if (part.text === undefined) line.append(codeBlock(part));
+    else if (part.text.trim()) {
+      const prose = document.createElement("p");
+      prose.textContent = part.text.trim();
+      line.append(prose);
+    }
+  }
   messages.append(line);
   messages.scrollTop = messages.scrollHeight;
 }
@@ -139,16 +211,9 @@ save.addEventListener("click", () => {
   const transcript = agent.history.map(({ role, content }) =>
     (role === "assistant" ? agent.name : "You") + "\n" + content
   ).join("\n\n");
-  const blob = new Blob([agent.name, "\n\n", transcript, "\n"], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
   const agentName = agent.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  link.href = url;
-  link.download = "noxis-chat-" + agentName + "-" + new Date().toISOString().slice(0, 10) + ".txt";
-  dialog.append(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1_000);
+  const filename = "noxis-chat-" + agentName + "-" + new Date().toISOString().slice(0, 10) + ".txt";
+  downloadText(filename, agent.name + "\n\n" + transcript + "\n");
 });
 clear.addEventListener("click", () => {
   const agent = agents.get(picker.value);

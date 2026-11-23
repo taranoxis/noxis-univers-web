@@ -23,7 +23,7 @@ const mockedWidget = `
   };
 `;
 
-test("desktop and mobile can open AI Friends, chat and return to the original portal", async t => {
+test("desktop, tablet and mobile can open AI Friends, chat and return to the original portal", async t => {
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
   t.after(() => browser.close());
   t.mock.method(globalThis, "fetch", async url => {
@@ -31,9 +31,11 @@ test("desktop and mobile can open AI Friends, chat and return to the original po
     return Response.json({ success: true, hostname: "taranoxis.github.io", action: "noxis_chat" });
   });
 
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 768, height: 1024 }, { width: 390, height: 844 }]) {
     const page = await browser.newPage({ viewport });
     const calls = [];
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"], { origin });
+    const source = "  <script>document.body.dataset.executed = 'yes';</script>\n" + "    <div>cod</div>\n".repeat(28).trimEnd();
     let unavailable = false;
     const env = {
       SITE_ORIGIN: origin,
@@ -42,6 +44,9 @@ test("desktop and mobile can open AI Friends, chat and return to the original po
       AI: { run: async (_model, options) => {
         calls.push(options.messages);
         if (unavailable) throw new Error("Provider unavailable");
+        if (options.messages.at(-1).content === "Un exemplu?") {
+          return { response: ["Codul:", "```html", source, "```", "Gata."].join("\n") };
+        }
         return { choices: [{ message: { content: "Răspuns <b>de test</b>." } }] };
       } },
     };
@@ -63,7 +68,7 @@ test("desktop and mobile can open AI Friends, chat and return to the original po
       } else if (url.origin === origin && url.pathname.startsWith(prefix)) {
         const path = decodeURIComponent(url.pathname.slice(prefix.length)) || "index.html";
         const types = { html: "text/html", js: "text/javascript", css: "text/css",
-          png: "image/png", webp: "image/webp", svg: "image/svg+xml" };
+          png: "image/png", webp: "image/webp", svg: "image/svg+xml", mjs: "text/javascript" };
         const type = types[path.split(".").at(-1)];
         if (!type) return route.abort();
         let body;
@@ -79,6 +84,7 @@ test("desktop and mobile can open AI Friends, chat and return to the original po
     const picker = page.locator("#friendsAgent");
     const save = page.getByRole("button", { name: "Save chat" });
     const dialog = await page.locator("#ai-friends").boundingBox();
+    assert.equal(await page.locator("#ai-friends").evaluate(el => getComputedStyle(el).borderWidth), "0px");
     assert.ok(dialog.width > viewport.width * (viewport.width > 500 ? 0.6 : 0.9));
     assert.equal(await picker.locator("option").count(), 8);
     await picker.selectOption("NX-20260919-AREN");
@@ -87,7 +93,7 @@ test("desktop and mobile can open AI Friends, chat and return to the original po
     await page.locator("#friendsMessage").fill("De unde vine un gând?");
     await page.getByRole("button", { name: "Send", exact: true }).click();
     await page.locator("#friendsMessages p").nth(1).waitFor();
-    assert.match(await page.locator("#friendsMessages").textContent(), /AREN Noxis\s+Răspuns <b>de test<\/b>/);
+    assert.match(await page.locator("#friendsMessages").innerText(), /AREN Noxis\s+Răspuns <b>de test<\/b>/);
     assert.equal(await page.locator("#friendsMessages b").count(), 0);
     const downloadEvent = page.waitForEvent("download");
     await save.click();
@@ -115,7 +121,21 @@ test("desktop and mobile can open AI Friends, chat and return to the original po
     assert.equal(await page.locator("#friendsMessages p").count(), 2);
     await page.locator("#friendsMessage").fill("Un exemplu?");
     await page.getByRole("button", { name: "Send", exact: true }).click();
-    await page.locator("#friendsMessages p").nth(3).waitFor();
+    const codeBlock = page.locator("#friendsMessages .friends-code");
+    await codeBlock.waitFor();
+    assert.equal(await codeBlock.locator("code").textContent(), source);
+    assert.equal(await page.locator("#friendsMessages script").count(), 0);
+    assert.equal(await page.locator("body").getAttribute("data-executed"), null);
+    assert.ok(await codeBlock.locator("pre").evaluate(el => el.scrollHeight > el.clientHeight));
+    assert.ok(await page.locator("#friendsMessages").evaluate(el => el.scrollWidth <= el.clientWidth));
+    await codeBlock.getByRole("button", { name: "Copy Code" }).click();
+    await codeBlock.getByText("Copied", { exact: true }).waitFor();
+    assert.equal(await page.evaluate(() => navigator.clipboard.readText()), source);
+    const codeDownload = page.waitForEvent("download");
+    await codeBlock.getByRole("button", { name: "Download" }).click();
+    const savedCode = await codeDownload;
+    assert.equal(savedCode.suggestedFilename(), "noxis-code.html");
+    assert.equal(await readFile(await savedCode.path(), "utf-8"), source);
     assert.equal(calls.at(-1).at(-3).content, "De unde vine un gând?");
 
     await page.keyboard.press("Escape");

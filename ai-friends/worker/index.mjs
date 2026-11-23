@@ -1,4 +1,5 @@
 import { agents, persona } from "./agents.mjs";
+import { messageParts } from "../message-parts.mjs";
 
 const MAX_BODY = 80_000;
 const MAX_REPLY = 4_200;
@@ -54,9 +55,9 @@ function validMessages(messages) {
 }
 
 function plainText(content) {
-  return content.split(/^[ \t]*```[^\n]*$/m).map((part, i) => {
-    if (i % 2) return part;
-    return part
+  return messageParts(content).map(({ text, code, fenced }) => {
+    if (text === undefined) return fenced ?? code;
+    return text
       .replace(/&(?:nbsp|#0*32|#x0*20|#0*160|#x0*a0);/gi, " ")
       .replace(/\\([*#_.-])/g, "$1")
       .replace(/^[ \t]{0,3}#{1,6}[ \t]+/gm, "")
@@ -137,7 +138,7 @@ export default {
       }
       const result = await env.AI.run(MODEL, {
         messages: [
-          { role: "system", content: persona(agent) },
+          { role: "system", content: persona(agent) + "\nFor source code, place each snippet inside triple-backtick fences with its language identifier. Keep the surrounding prose as plain text." },
           ...data.messages.map(({ role, content }) => ({ role, content })),
         ],
         max_completion_tokens: 1_050,
