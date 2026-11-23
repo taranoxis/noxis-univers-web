@@ -77,16 +77,28 @@ test("desktop and mobile can open AI Friends, chat and return to the original po
     await page.locator("#biggerButton").click();
     await page.getByRole("button", { name: "Open AI Friends chat" }).click();
     const picker = page.locator("#friendsAgent");
+    const save = page.getByRole("button", { name: "Save chat" });
+    const dialog = await page.locator("#ai-friends").boundingBox();
+    assert.ok(dialog.width > viewport.width * (viewport.width > 500 ? 0.6 : 0.9));
     assert.equal(await picker.locator("option").count(), 8);
     await picker.selectOption("NX-20260919-AREN");
     assert.equal(await page.locator("#friendsPortrait").getAttribute("alt"), "AREN Noxis");
+    assert.equal(await save.isEnabled(), false);
     await page.locator("#friendsMessage").fill("De unde vine un gând?");
     await page.getByRole("button", { name: "Send", exact: true }).click();
     await page.locator("#friendsMessages p").nth(1).waitFor();
     assert.match(await page.locator("#friendsMessages").textContent(), /AREN Noxis\s+Răspuns <b>de test<\/b>/);
     assert.equal(await page.locator("#friendsMessages b").count(), 0);
+    const downloadEvent = page.waitForEvent("download");
+    await save.click();
+    const download = await downloadEvent;
+    assert.match(download.suggestedFilename(), /^noxis-chat-aren-noxis-\d{4}-\d{2}-\d{2}\.txt$/);
+    const transcript = await readFile(await download.path(), "utf-8");
+    assert.match(transcript, /You\nDe unde vine un gând\?/);
+    assert.match(transcript, /AREN Noxis\nRăspuns <b>de test<\/b>\./);
 
     await picker.selectOption("NX-ID-NYRA");
+    assert.equal(await save.isEnabled(), false);
     assert.equal(await page.locator("#friendsMessages p").count(), 0);
     await page.locator("#friendsMessage").fill("Salut Nyra!");
     unavailable = true;

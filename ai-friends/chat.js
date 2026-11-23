@@ -7,6 +7,7 @@ const messages = document.getElementById("friendsMessages");
 const form = document.getElementById("friendsForm");
 const input = document.getElementById("friendsMessage");
 const send = document.getElementById("friendsSend");
+const save = document.getElementById("friendsSave");
 const clear = document.getElementById("friendsClear");
 const verification = document.getElementById("friendsVerification");
 const status = document.getElementById("friendsStatus");
@@ -25,6 +26,7 @@ for (const { dataset } of document.querySelectorAll("#gallery [data-agent-id]"))
 
 function updateControls() {
   send.disabled = busy || !token || !input.value.trim();
+  save.disabled = !agents.get(picker.value)?.history.length;
   clear.disabled = busy;
 }
 
@@ -129,6 +131,24 @@ input.addEventListener("input", () => {
   const agent = agents.get(picker.value);
   if (agent) agent.draft = input.value;
   updateControls();
+});
+save.addEventListener("click", () => {
+  const agent = agents.get(picker.value);
+  if (!agent?.history.length) return;
+
+  const transcript = agent.history.map(({ role, content }) =>
+    (role === "assistant" ? agent.name : "You") + "\n" + content
+  ).join("\n\n");
+  const blob = new Blob([agent.name, "\n\n", transcript, "\n"], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const agentName = agent.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  link.href = url;
+  link.download = "noxis-chat-" + agentName + "-" + new Date().toISOString().slice(0, 10) + ".txt";
+  dialog.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1_000);
 });
 clear.addEventListener("click", () => {
   const agent = agents.get(picker.value);
