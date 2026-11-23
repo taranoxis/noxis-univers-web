@@ -1,5 +1,6 @@
 import { endpoint, siteKey } from "./config.js";
 import { messageParts } from "./message-parts.mjs";
+import { IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_TEXT_BYTES, MAX_TEXT_CHARS } from "./attachments.mjs";
 
 const chatPage = document.getElementById("ai-friends");
 const picker = document.getElementById("friendsAgent");
@@ -10,6 +11,12 @@ const input = document.getElementById("friendsMessage");
 const send = document.getElementById("friendsSend");
 const save = document.getElementById("friendsSave");
 const clear = document.getElementById("friendsClear");
+const attach = document.getElementById("friendsAttach");
+const fileInput = document.getElementById("friendsFile");
+const attachmentRow = document.getElementById("friendsAttachment");
+const fileName = document.getElementById("friendsFilename");
+const removeFile = document.getElementById("friendsRemoveFile");
+const fileStatus = document.getElementById("friendsFileStatus");
 const verification = document.getElementById("friendsVerification");
 const status = document.getElementById("friendsStatus");
 const agents = new Map();
@@ -26,9 +33,45 @@ for (const { dataset } of document.querySelectorAll("#friendsRoster [data-agent-
 }
 
 function updateControls() {
-  send.disabled = busy || !token || !input.value.trim();
-  save.disabled = !agents.get(picker.value)?.history.length;
+  const agent = agents.get(picker.value);
+  send.disabled = busy || !token || agent?.readingFile || (!input.value.trim() && !agent?.attachment);
+  save.disabled = !agent?.history.length;
   clear.disabled = busy;
+  attach.disabled = removeFile.disabled = busy || Boolean(agent?.readingFile);
+  attachmentRow.hidden = !agent?.attachment;
+  fileName.textContent = agent?.attachment?.name || "";
+  fileStatus.textContent = agent?.readingFile ? "Reading attachment…" : agent?.fileError || "";
+}
+
+async function readAttachment(file) {
+  const name = file.name.slice(0, 120);
+  if (!file.size) throw new Error("This file is empty.");
+  if (Object.hasOwn(IMAGE_TYPES, file.type)) {
+    if (file.size > MAX_IMAGE_BYTES) throw new Error("Choose an image under 1 MB.");
+    const url = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("This image could not be read."));
+      reader.readAsDataURL(file);
+    });
+    if (!url.startsWith(`data:${file.type};base64,${IMAGE_TYPES[file.type]}`)) {
+      throw new Error("This file does not match its image format.");
+    }
+    return { name, kind: "image", data: url };
+  }
+  if (!/\.(txt|md|csv|tsv|json)$/i.test(file.name)) {
+    throw new Error("Choose PNG, JPG, WebP, TXT, MD, CSV, TSV or JSON.");
+  }
+  if (file.size > MAX_TEXT_BYTES) throw new Error("Choose a text file under 12,000 characters.");
+  let data;
+  try {
+    data = new TextDecoder("utf-8", { fatal: true }).decode(await file.arrayBuffer());
+  } catch {
+    throw new Error("Choose a UTF-8 text file.");
+  }
+  if (!data.trim() || data.includes("\0")) throw new Error("Choose a non-empty text file.");
+  if (data.length > MAX_TEXT_CHARS) throw new Error("Choose a text file under 12,000 characters.");
+  return { name, kind: "text", data };
 }
 
 const codeFormats = new Map([
@@ -92,7 +135,7 @@ function codeBlock({ code, language }) {
   return block;
 }
 
-function appendMessage(agent, { role, content }) {
+function appendMessage(agent, { role, content, attachment }) {
   const line = document.createElement("article");
   line.className = "friends-message friends-message-" + role;
   const name = document.createElement("strong");
@@ -105,6 +148,18 @@ function appendMessage(agent, { role, content }) {
       const prose = document.createElement("p");
       prose.textContent = part.text.trim();
       line.append(prose);
+    }
+  }
+  if (attachment) {
+    const label = document.createElement("p");
+    label.textContent = "Attachment: " + attachment.name;
+    line.append(label);
+    if (attachment.kind === "image") {
+      const image = document.createElement("img");
+      image.className = "friends-image";
+      image.src = attachment.data;
+      image.alt = attachment.name;
+      line.append(image);
     }
   }
   messages.append(line);
@@ -193,12 +248,41 @@ input.addEventListener("input", () => {
   if (agent) agent.draft = input.value;
   updateControls();
 });
+attach.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", async () => {
+  const agent = agents.get(picker.value);
+  const file = fileInput.files[0];
+  fileInput.value = "";
+  if (!agent || !file || busy) return;
+  const reading = readAttachment(file);
+  agent.readingFile = reading;
+  agent.fileError = "";
+  updateControls();
+  try {
+    const attachment = await reading;
+    if (agent.readingFile === reading) agent.attachment = attachment;
+  } catch (error) {
+    if (agent.readingFile === reading) agent.fileError = error.message || "This file could not be read.";
+  } finally {
+    if (agent.readingFile === reading) agent.readingFile = undefined;
+    updateControls();
+  }
+});
+removeFile.addEventListener("click", () => {
+  const agent = agents.get(picker.value);
+  if (!agent) return;
+  agent.attachment = undefined;
+  agent.fileError = "";
+  updateControls();
+  attach.focus();
+});
 save.addEventListener("click", () => {
   const agent = agents.get(picker.value);
   if (!agent?.history.length) return;
 
-  const transcript = agent.history.map(({ role, content }) =>
+  const transcript = agent.history.map(({ role, content, attachment }) =>
     (role === "assistant" ? agent.name : "You") + "\n" + content
+      + (attachment ? "\n[Attachment: " + attachment.name + "]" : "")
   ).join("\n\n");
   const agentName = agent.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const filename = "noxis-chat-" + agentName + "-" + new Date().toISOString().slice(0, 10) + ".txt";
@@ -209,6 +293,8 @@ clear.addEventListener("click", () => {
   agent.history = [];
   agent.draft = "";
   agent.notice = "";
+  agent.attachment = agent.readingFile = undefined;
+  agent.fileError = "";
   showAgent();
   input.focus();
 });
@@ -216,6 +302,7 @@ clear.addEventListener("click", () => {
 const errors = {
   400: "This message could not be sent. Try shortening it.",
   403: "Verification expired or failed. Please try again.",
+  413: "Message and attachments are too large. Try a smaller file.",
   429: "The chat has reached a usage limit. Please try again later.",
 };
 
@@ -224,9 +311,10 @@ form.addEventListener("submit", async event => {
   const agentId = picker.value;
   const agent = agents.get(agentId);
   const content = input.value.trim();
-  if (!configured || !agent || !content || !token || busy) return;
+  if (!configured || !agent || (!content && !agent.attachment) || agent.readingFile || !token || busy) return;
 
-  const userMessage = { role: "user", content };
+  const attachment = agent.attachment;
+  const userMessage = { role: "user", content, ...(attachment && { attachment }) };
   const challenge = token;
   const draft = agent.draft;
   token = undefined;
@@ -253,6 +341,8 @@ form.addEventListener("submit", async event => {
     if (typeof reply !== "string" || !reply.trim()) throw new Error();
     agent.history.push(userMessage, { role: "assistant", content: reply });
     if (agent.draft === draft) agent.draft = "";
+    if (agent.attachment === attachment) agent.attachment = undefined;
+    agent.fileError = "";
     agent.notice = "";
   } catch (error) {
     agent.notice = Object.values(errors).includes(error.message) ? error.message

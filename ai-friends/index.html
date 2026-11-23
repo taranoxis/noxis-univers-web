@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NOXIS AI Friends</title>
+  <link rel="icon" href="../noxis-favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./chat.css">
 </head>
 <body class="friends-page">
@@ -22,12 +23,19 @@
   </div>
   <div id="friendsMessages" role="log" aria-label="Conversation" tabindex="0" hidden></div>
   <form id="friendsForm" hidden>
-    <p class="friends-note">You’re chatting with AI. Messages are sent to the online AI service. Please avoid sharing private information.</p>
+    <p class="friends-note">You’re chatting with AI. Messages and attachments are sent to Cloudflare when you press Send. Please avoid sharing private information.</p>
     <label for="friendsMessage">Your message</label>
-    <textarea id="friendsMessage" rows="2" maxlength="800" required></textarea>
+    <textarea id="friendsMessage" rows="2" maxlength="800"></textarea>
+    <div class="friends-attachment" id="friendsAttachment" hidden>
+      <span id="friendsFilename"></span>
+      <button type="button" id="friendsRemoveFile">Remove attachment</button>
+    </div>
+    <p id="friendsFileStatus" class="friends-file-status" role="status"></p>
+    <input type="file" id="friendsFile" accept=".txt,.md,.csv,.tsv,.json,.png,.jpg,.jpeg,.webp" hidden>
     <div id="friendsVerification"></div>
     <div class="friends-actions">
       <button id="friendsSend" type="submit" disabled>Send</button>
+      <button id="friendsAttach" type="button" title="PNG, JPG or WebP up to 1 MB. TXT, MD, CSV, TSV or JSON up to 12,000 characters.">Attach file</button>
       <button id="friendsSave" type="button" disabled>Save chat</button>
       <button id="friendsClear" type="button">Clear chat</button>
     </div>

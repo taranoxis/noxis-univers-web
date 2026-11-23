@@ -197,3 +197,31 @@
   #ai-friends .friends-actions { gap: .4rem; }
   #ai-friends .friends-note { margin: .45rem 0; }
 }
+
+#ai-friends .friends-attachment {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  font-size: .875rem;
+  color: #b6eaff;
+}
+
+#friendsFilename { overflow-wrap: anywhere; }
+
+#ai-friends .friends-file-status {
+  color: #f2d595;
+  font-size: .875rem;
+  margin: .25rem 0;
+}
+
+#ai-friends .friends-file-status:empty { display: none; }
+
+#friendsMessages .friends-image {
+  display: block;
+  max-width: min(100%, 20rem);
+  max-height: 14rem;
+  object-fit: contain;
+  margin-top: .45rem;
+  border-radius: 8px;
+}

@@ -141,6 +141,26 @@ test("desktop, tablet and mobile can open AI Friends, chat and return to the ori
     assert.equal(await readFile(await savedCode.path(), "utf-8"), source);
     assert.equal(calls.at(-1).at(-3).content, "De unde vine un gând?");
 
+    const file = page.locator("#friendsFile");
+    await file.setInputFiles({ name: "date.csv", mimeType: "text/csv",
+      buffer: Buffer.from("nume,valoare\nAlfa,27") });
+    await page.getByText("date.csv", { exact: true }).waitFor();
+    await page.getByRole("button", { name: "Remove attachment" }).click();
+    assert.equal(await page.getByRole("button", { name: "Send", exact: true }).isEnabled(), false);
+    await file.setInputFiles({ name: "date.csv", mimeType: "text/csv",
+      buffer: Buffer.from("nume,valoare\nAlfa,27") });
+    await page.getByRole("button", { name: "Send", exact: true }).click();
+    await page.getByText("Attachment: date.csv", { exact: true }).waitFor();
+    assert.match(calls.at(-1).at(-1).content, /Alfa,27/);
+    assert.equal(await page.getByText("date.csv", { exact: true }).isVisible(), false);
+
+    const pixel = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==";
+    await file.setInputFiles({ name: "test.png", mimeType: "image/png", buffer: Buffer.from(pixel, "base64") });
+    await page.getByRole("button", { name: "Send", exact: true }).click();
+    await page.getByRole("img", { name: "test.png" }).waitFor();
+    assert.equal(calls.at(-1).at(-1).content[1].image_url.url, "data:image/png;base64," + pixel);
+    assert.equal(await page.locator('link[rel="icon"]').getAttribute("href"), "../noxis-favicon.svg");
+
     await page.getByRole("link", { name: "Back to Choose Your Path" }).click();
     await page.waitForURL(origin + prefix + "#choose-your-path");
     assert.equal(await page.locator("#ai-friends").count(), 0);

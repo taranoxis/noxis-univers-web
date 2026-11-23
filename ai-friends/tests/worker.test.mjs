@@ -103,6 +103,16 @@ test("malformed or over-limit input never reaches the online services", async t 
     { ...valid, messages: Array(7).fill(valid.messages[0]) }]) {
     assert.equal((await worker.fetch(request(data), env)).status, 400);
   }
+  for (const attachment of [
+    { name: "a.svg", kind: "image", data: "data:image/svg+xml;base64,PHN2Zz4=" },
+    { name: "a.png", kind: "image", data: "https://example.com/image.png" },
+    { name: "a.csv", kind: "text", data: "x".repeat(12_001) },
+  ]) {
+    const response = await worker.fetch(request({
+      ...valid, messages: [{ ...valid.messages[0], attachment }],
+    }), env);
+    assert.equal(response.status, 400);
+  }
   assert.equal((await worker.fetch(request(" ".repeat(80_001)), env)).status, 413);
   assert.equal((await worker.fetch(request(valid, { "Content-Type": "text/plain" }), env)).status, 415);
   assert.equal((await worker.fetch(request(null, { method: "GET" }), env)).status, 405);
