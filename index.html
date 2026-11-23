@@ -2760,6 +2760,7 @@ button.hotspot,
     <div class="choose-path-portal-wrap">
       <button class="portal-close-hotspot" id="portalCloseHotspot" onclick="document.getElementById('universe').classList.remove('open')" aria-label="Close portal"></button>
       <img src="assets/choose-your-path-final.png" alt="Choose Your Path" class="choose-path-portal-image">
+      <a id="createHotspot" class="create-hotspot" href="create/" aria-label="Open NOXIS Create"></a>
       <a id="booksHotspot" class="books-hotspot" href="books/" aria-label="Books archive"></a>
       <button id="discoverHotspot"
         class="discover-hotspot"
@@ -2801,14 +2802,14 @@ button.hotspot,
         </div>
       </article>
 
-      <article class="uportal portal-create" id="createPortal">
+      <a class="uportal portal-create" id="createPortal" href="create/">
         <div class="uportal-content">
           <div class="tag">CREATION</div>
           <h3>Create</h3>
           <p>Music, lyrics, visuals and Music → Video creation.</p>
           <strong>TURN SOUND INTO VISION →</strong>
         </div>
-      </article>
+      </a>
 
       <article class="uportal portal-discover" id="discoverPortal">
         <div class="uportal-content">
@@ -3225,6 +3226,16 @@ document.addEventListener(
   position:relative !important;
 }
 
+.create-hotspot{
+  position:absolute;
+  left:18%;
+  top:53%;
+  width:15.5%;
+  height:29%;
+  z-index:20;
+  border-radius:20px;
+}
+
 .books-hotspot{
   position:absolute;
   left:18%;
@@ -3235,6 +3246,7 @@ document.addEventListener(
   border-radius:20px;
 }
 
+.create-hotspot:focus-visible,
 .books-hotspot:focus-visible{
   outline:2px solid #F0C76D;
   outline-offset:4px;
@@ -4868,9 +4880,10 @@ window.addEventListener("load", () => {
 
 
 <script>
-if (location.hash === '#booksPortal') {
+const returnPortal = { '#booksPortal': 'booksHotspot', '#createPortal': 'createHotspot' }[location.hash];
+if (returnPortal) {
   document.getElementById('universe').classList.add('open');
-  document.getElementById('booksHotspot').focus();
+  document.getElementById(returnPortal).focus();
 }
 </script>
 

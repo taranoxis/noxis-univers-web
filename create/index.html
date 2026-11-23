@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="NOXIS CREATE — The Creative Universe. An explorable universe of AI generators: images, music, video, voice, avatars, text, apps, 3D worlds, AI models and local AI cores.">
+<title>NOXIS ✳ CREATE — The Creative Universe</title>
+<link rel="icon" href="../noxis-favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --gold:#f5c451; --gold-soft:rgba(245,196,81,.55);
+    --cyan:#58c8ff; --violet:#b07cff; --ink:#03040c;
+    --panel-bg1:rgba(8,11,28,.97); --panel-bg2:rgba(4,6,17,.985);
+    --line:rgba(140,170,255,.14); --text:#dfe6ff; --muted:#9aa7cc;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(120% 120% at 50% 0%, #070b1e 0%, var(--ink) 55%, #010208 100%);
+    min-height:100dvh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    color:var(--text); overflow-x:hidden;
+  }
+  /* ---------- STAGE : the approved artwork, untouched ---------- */
+  .stage{
+    position:relative;
+    aspect-ratio:1671/941;
+    width:min(100vw, calc(100dvh * (1671 / 941)));
+    max-height:100dvh;
+    border-radius:6px;
+    box-shadow:0 30px 90px rgba(0,0,0,.75);
+    overflow:hidden;
+    background:#05070f;
+  }
+  .stage>img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none;pointer-events:none}
+  /* ---------- HOTSPOTS ---------- */
+  .hotspot{
+    position:absolute; padding:0; margin:0;
+    background:transparent; border:0; border-radius:16px;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+    outline:none; font:inherit;
+  }
+  .hotspot::before{
+    content:""; position:absolute; inset:6%;
+    border-radius:16px; border:1px solid transparent;
+    background:radial-gradient(ellipse at 50% 45%, rgba(140,190,255,.14), rgba(255,215,150,.05) 55%, transparent 75%);
+    box-shadow:0 0 0 1px transparent, 0 0 26px transparent, inset 0 0 30px transparent;
+    opacity:0; transition:opacity .35s ease, box-shadow .35s ease;
+    pointer-events:none;
+  }
+  .hotspot:hover::before, .hotspot:focus-visible::before, .hotspot.reveal::before{
+    opacity:1;
+    border-color:rgba(255,215,150,.5);
+    box-shadow:0 0 26px rgba(130,180,255,.4), inset 0 0 34px rgba(255,205,130,.16);
+  }
+  .hotspot:focus-visible{outline:2px solid rgba(255,225,160,.9); outline-offset:2px}
+  .hotspot .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  /* ---------- HINT / TOGGLE (live outside the artwork) ---------- */
+  #hint{
+    position:fixed; left:50%; bottom:14px; transform:translateX(-50%);
+    font-size:clamp(11px,1.6vw,13px); letter-spacing:.14em; text-transform:uppercase;
+    color:rgba(214,226,255,.8); text-shadow:0 0 14px rgba(90,140,255,.8);
+    pointer-events:none; transition:opacity 1s ease; white-space:nowrap;
+  }
+  #hint.gone{opacity:0}
+  #skyToggle{
+    position:fixed; top:12px; right:12px; z-index:40;
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(6,9,22,.72); color:#e8ddc0;
+    border:1px solid rgba(245,196,81,.35); border-radius:999px;
+    padding:7px 14px; font-size:12px; letter-spacing:.08em; cursor:pointer;
+    backdrop-filter:blur(6px); transition:border-color .3s, color .3s;
+  }
+  .portal-return{
+    position:fixed; top:12px; left:12px; z-index:40;
+    padding:7px 14px; border:1px solid rgba(245,196,81,.35); border-radius:999px;
+    background:rgba(6,9,22,.85); color:#ffe9b8; text-decoration:none; font-size:13px;
+  }
+  .portal-return:focus-visible{outline:2px solid #f5c451; outline-offset:3px}
+  #skyToggle:hover{border-color:rgba(245,196,81,.8)}
+  #skyToggle[aria-pressed="true"]{color:#ffe9b8; border-color:rgba(245,196,81,.9); box-shadow:0 0 18px rgba(245,196,81,.25)}
+  #fx{position:absolute; inset:0; pointer-events:none; z-index:3}
+  /* ---------- PANEL ---------- */
+  #panel{position:fixed; inset:0; z-index:60; visibility:hidden}
+  #panel.open{visibility:visible}
+  #backdrop{position:absolute; inset:0; background:rgba(2,4,12,.62); opacity:0; transition:opacity .4s ease; backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px)}
+  #panel.open #backdrop{opacity:1}
+  .sheet{
+    position:absolute; top:0; right:0; height:100%;
+    width:min(620px,100%);
+    background:linear-gradient(180deg,var(--panel-bg1),var(--panel-bg2));
+    border-left:1px solid rgba(245,196,81,.22);
+    box-shadow:-40px 0 90px rgba(0,0,0,.65);
+    transform:translateX(103%); transition:transform .5s cubic-bezier(.22,.9,.28,1);
+    display:flex; flex-direction:column;
+  }
+  #panel.open .sheet{transform:translateX(0)}
+  .sheet-head{
+    display:flex; align-items:center; gap:14px;
+    padding:18px 22px 14px;
+    border-bottom:1px solid rgba(245,196,81,.2);
+    background:linear-gradient(180deg, rgba(30,24,10,.35), transparent);
+  }
+  .glyph{
+    font-size:26px; width:52px; height:52px; flex:0 0 52px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%; border:1px solid rgba(140,180,255,.35);
+    background:radial-gradient(circle at 35% 30%, rgba(120,160,255,.25), rgba(10,14,34,.6));
+    box-shadow:0 0 22px rgba(110,150,255,.28);
+  }
+  .sheet-head h2{
+    margin:0; font-size:clamp(18px,2.6vw,24px); letter-spacing:.1em;
+    font-family:"Palatino Linotype","Book Antiqua",Georgia,serif; color:#ffe9b8;
+    text-shadow:0 0 18px rgba(245,196,81,.35);
+  }
+  .sheet-head .sub{font-size:12px; color:var(--muted); letter-spacing:.12em; margin-top:3px}
+  #closeBtn{
+    margin-left:auto; flex:0 0 auto; width:44px; height:44px; border-radius:50%;
+    background:rgba(10,14,32,.8); color:#ffd98a; font-size:20px;
+    border:1px solid rgba(255,205,130,.4); cursor:pointer;
+    transition:transform .25s, box-shadow .25s;
+  }
+  #closeBtn:hover,#closeBtn:focus-visible{transform:rotate(90deg); box-shadow:0 0 18px rgba(255,205,130,.35); outline:none}
+  .sheet-body{flex:1; overflow-y:auto; padding:18px 24px 34px; scrollbar-width:thin; scrollbar-color:rgba(140,170,255,.35) transparent}
+  .sheet-body::-webkit-scrollbar{width:8px}
+  .sheet-body::-webkit-scrollbar-thumb{background:rgba(140,170,255,.3); border-radius:8px}
+  .blurb{color:#c9d4f2; line-height:1.65; font-size:14.5px; margin:6px 0 18px}
+  .kicker{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); margin:22px 0 10px; opacity:.85}
+  /* ---------- PROGRAM ENTRIES ---------- */
+  .prog{padding:14px 2px 4px}
+  /* flowing light-ribbon divider — echoes the artwork's swirls */
+  .prog::after{
+    content:""; display:block; height:14px; margin-top:10px;
+    background:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'120'%20height%3D'14'%20viewBox%3D'0%200%20120%2014'%3E%3Cdefs%3E%3ClinearGradient%20id%3D'g'%20x1%3D'0'%20x2%3D'1'%3E%3Cstop%20offset%3D'0'%20stop-color%3D'%23f5c451'%2F%3E%3Cstop%20offset%3D'.55'%20stop-color%3D'%23b07cff'%2F%3E%3Cstop%20offset%3D'1'%20stop-color%3D'%2358c8ff'%2F%3E%3C%2FlinearGradient%3E%3Cfilter%20id%3D'b'%20x%3D'-0.3'%20y%3D'-1.5'%20width%3D'1.6'%20height%3D'4'%3E%3CfeGaussianBlur%20stdDeviation%3D'1.8'%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cpath%20d%3D'M0%208%20Q15%202%2030%208%20T60%208%20T90%208%20T120%208'%20fill%3D'none'%20stroke%3D'%23f5c451'%20stroke-width%3D'3.4'%20opacity%3D'.22'%20filter%3D'url(%23b)'%20stroke-linecap%3D'round'%2F%3E%3Cpath%20d%3D'M0%208%20Q15%202%2030%208%20T60%208%20T90%208%20T120%208'%20fill%3D'none'%20stroke%3D'url(%23g)'%20stroke-width%3D'1.2'%20stroke-linecap%3D'round'%2F%3E%3C%2Fsvg%3E") repeat-x left center / 120px 14px;
+    opacity:.9;
+    animation:flow 16s linear infinite;
+  }
+  .prog:last-child::after{content:none}
+  @keyframes flow{from{background-position-x:0}to{background-position-x:120px}}
+  .prog h3{margin:0 0 6px; font-size:17px; letter-spacing:.03em}
+  .prog h3 a{color:#8fd0ff; text-decoration:none; border-bottom:1px dotted rgba(120,190,255,.5); transition:color .25s, border-color .25s}
+  .prog h3 a:hover,.prog h3 a:focus-visible{color:#ffd98a; border-color:rgba(255,205,130,.7); outline:none}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 10px}
+  .chip{font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:999px; border:1px solid; white-space:nowrap}
+  .c-online{color:#7cd7ff; border-color:rgba(124,215,255,.5); background:rgba(124,215,255,.08)}
+  .c-local{color:#71e2a4; border-color:rgba(113,226,164,.5); background:rgba(113,226,164,.08)}
+  .c-both{color:#c9a2ff; border-color:rgba(201,162,255,.5); background:rgba(201,162,255,.08)}
+  .c-free{color:#7ee2a8; border-color:rgba(126,226,168,.55); background:rgba(126,226,168,.08)}
+  .c-freemium{color:#ffd98a; border-color:rgba(255,217,138,.55); background:rgba(255,217,138,.08)}
+  .c-paid{color:#ff9db0; border-color:rgba(255,157,176,.5); background:rgba(255,157,176,.08)}
+  .c-oss{color:#a8ffdf; border-color:rgba(168,255,223,.5); background:rgba(168,255,223,.07)}
+  .prog p{margin:0 0 8px; line-height:1.6; font-size:14px; color:#c9d4f2}
+  .prog .req{font-size:12.5px; color:var(--muted); margin-top:8px; padding-left:10px; border-left:2px solid rgba(245,196,81,.4)}
+  .prog .req b{color:#e8ddc0; font-weight:600}
+  /* ---------- OLLAMA / FAMILIES ---------- */
+  code.cmd{
+    display:block; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13px; color:#bfe3ff; background:rgba(9,13,30,.85);
+    border:1px solid rgba(120,160,255,.25); border-radius:10px;
+    padding:12px 14px; margin:8px 0 14px; overflow-x:auto; white-space:pre;
+  }
+  .kw{color:#ffd98a}
+  details.family{
+    border:1px solid rgba(140,170,255,.2); border-radius:12px;
+    background:rgba(16,22,48,.55); margin:0 0 10px; overflow:hidden;
+  }
+  details.family summary{
+    list-style:none; cursor:pointer; padding:13px 16px;
+    display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+    transition:background .25s;
+  }
+  details.family summary::-webkit-details-marker{display:none}
+  details.family summary:hover,details.family summary:focus-visible{background:rgba(120,160,255,.08); outline:none}
+  details.family .fam{font-size:15.5px; color:#ffe9b8; letter-spacing:.04em; font-weight:600}
+  details.family .org{font-size:12px; color:var(--muted)}
+  details.family .cnt{margin-left:auto; font-size:10.5px; letter-spacing:.1em; color:#8fd0ff; border:1px solid rgba(124,215,255,.4); border-radius:999px; padding:2px 9px}
+  details.family[open] summary{border-bottom:1px solid rgba(140,170,255,.18); background:rgba(120,160,255,.06)}
+  details.family summary::after{content:"+"; color:#ffd98a; font-size:16px}
+  details.family[open] summary::after{content:"–"}
+  .fam-body{padding:12px 16px 14px; font-size:13.5px; color:#c9d4f2; line-height:1.6}
+  .models{display:flex; flex-wrap:wrap; gap:7px; margin:9px 0 4px}
+  .model{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px;
+    color:#bfe3ff; border:1px solid rgba(120,160,255,.3); border-radius:8px;
+    padding:3px 9px; background:rgba(14,20,44,.7);
+    text-decoration:none; transition:border-color .2s, color .2s;
+  }
+  a.model:hover,a.model:focus-visible{border-color:rgba(255,205,130,.7); color:#ffd98a; outline:none}
+  .note{font-size:12.5px; color:var(--muted); line-height:1.55; padding:10px 12px; border:1px dashed rgba(245,196,81,.35); border-radius:10px; margin-top:16px}
+  .foot{margin-top:20px; font-size:11.5px; color:rgba(154,167,204,.75); line-height:1.5}
+  .foot a{color:#8fd0ff; text-decoration:none}
+  /* breadcrumb inside panel */
+  .crumbs{display:flex; gap:8px; flex-wrap:wrap; margin:2px 0 14px}
+  .crumbs button{
+    background:rgba(16,22,48,.6); border:1px solid rgba(140,170,255,.25); color:#8fd0ff;
+    font-size:11px; letter-spacing:.08em; border-radius:999px; padding:5px 12px; cursor:pointer;
+  }
+  .crumbs button:hover{border-color:rgba(255,205,130,.6); color:#ffd98a}
+  @media (max-width:640px){
+    .sheet{width:100%; border-left:0}
+    .sheet-body{padding:14px 16px 30px}
+    #hint{bottom:8px}
+  }
+  .h-rot{display:none}
+  @media (orientation:portrait) and (max-width:640px){
+    .h-any{display:none}
+    .h-rot{display:inline}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{transition:none!important; animation:none!important}
+    #fx{display:none}
+  }
+</style>
+</head>
+<body>
+<a class="portal-return" href="../#createPortal">Back to NOXIS Univers</a>
+
+<main class="stage" id="stage" aria-label="NOXIS CREATE — The Creative Universe. Select a glowing symbol to open a gallery of AI generators.">
+  <img src="universe.webp" alt="NOXIS CREATE — The Creative Universe: a cosmic hall where a robed muse stands before eleven glowing AI generator symbols">
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <!-- hotspots injected by script -->
+</main>
+
+<p id="hint"><span class="h-any">✦ Select a glowing symbol to explore</span><span class="h-rot">✦ Rotate your phone to fill the universe</span></p>
+<button id="skyToggle" aria-pressed="false" title="Toggle optional ambient starlight overlay">✦ Living sky: off</button>
+
+<div id="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle" inert>
+  <div id="backdrop"></div>
+  <section class="sheet" aria-label="Gallery panel">
+    <header class="sheet-head">
+      <div class="glyph" id="panelGlyph">✳</div>
+      <div>
+        <h2 id="panelTitle">NOXIS CREATE</h2>
+        <div class="sub" id="panelSub">The Creative Universe</div>
+      </div>
+      <button id="closeBtn" aria-label="Close gallery and return to the universe">✕</button>
+    </header>
+    <div class="sheet-body" id="panelBody"></div>
+  </section>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   NOXIS CREATE — content data
+   Extend safely: add objects to PROGRAMS or OLLAMA_FAMILIES,
+   or add entries to AI_CORE_EXTRA. No design changes needed.
+   Prices / availability verified Nov 2026 — they change often,
+   always confirm on the official site.
+   ============================================================ */
+
+/* ---- interactive zones on the approved artwork (percent of stage) ---- */
+const HOTSPOTS = [
+  { id:"images",   x:22.3, y:15.8, w:11.4, h:15.0, label:"IMAGES" },
+  { id:"music",    x:36.8, y:15.8, w:10.5, h:15.0, label:"MUSIC" },
+  { id:"video",    x:53.6, y:15.8, w:9.0,  h:15.0, label:"VIDEO" },
+  { id:"voice",    x:66.9, y:15.8, w:11.6, h:15.0, label:"VOICE & AUDIO" },
+  { id:"avatars",  x:25.6, y:32.6, w:13.0, h:16.6, label:"AVATARS & ANIMATION" },
+  { id:"models",   x:66.6, y:32.6, w:12.9, h:16.6, label:"AI MODELS & BRAINS" },
+  { id:"text",     x:29.3, y:50.0, w:11.5, h:16.6, label:"TEXT & STORIES" },
+  { id:"apps",     x:44.6, y:50.5, w:11.5, h:16.6, label:"APPS & WEBSITES" },
+  { id:"worlds",   x:58.2, y:50.5, w:10.4, h:16.6, label:"3D & WORLDS" },
+  { id:"systems",  x:72.0, y:50.0, w:12.6, h:17.0, label:"SYSTEMS & ENVIRONMENTS" },
+  /* AI CORE constellation (right panel) */
+  { id:"aicore",       x:85.4, y:12.0, w:12.8, h:10.0, label:"AI CORE — Local & Open-Source overview" },
+  { id:"fam-ollama",   x:85.4, y:26.6, w:12.8, h:4.6,  label:"Ollama — run AI models locally" },
+  { id:"fam-llama",    x:85.4, y:31.8, w:12.8, h:4.6,  label:"Llama model family" },
+  { id:"fam-qwen",     x:85.4, y:37.0, w:12.8, h:4.6,  label:"Qwen model family" },
+  { id:"fam-phi",      x:85.4, y:42.4, w:12.8, h:4.6,  label:"Phi model family" },
+  { id:"ubuntu",       x:85.4, y:47.6, w:12.8, h:4.6,  label:"Ubuntu AI — local AI on Ubuntu Linux" },
+  { id:"other-models", x:85.4, y:52.8, w:12.8, h:5.0,  label:"+ Other model families" }
+];
+
+/* ---- Ollama model families (verified against ollama.com/library, Nov 2026) ---- */
+const OLLAMA_FAMILIES = [
+  { id:"llama", name:"Llama", org:"Meta", about:"The most widely run open-weight family — chat, coding and vision models in every size.",
+    models:[["llama4","scalable MoE generation"],["llama3.3","70B chat"],["llama3.2","1b · 3b · 11b · 90b vision"],["llama3.1","8b · 70b · 405b"],["llama2","7b · 13b · 70b"],["codellama","code specialist"]] },
+  { id:"qwen", name:"Qwen", org:"Alibaba", about:"Huge multilingual ecosystem — chat, coder, vision (VL), reasoning (QwQ) and embedding lines.",
+    models:[["qwen3.8","latest generation"],["qwen3.5","0.8b–122b"],["qwen3","0.6b–235b"],["qwen3-coder","30b · 480b"],["qwen3-vl","vision 2b–235b"],["qwen2.5","0.5b–72b"],["qwen2.5-coder","0.5b–32b"],["qwq","reasoning"]] },
+  { id:"deepseek", name:"DeepSeek", org:"DeepSeek", about:"Strong open reasoning models — R1 reasoning line and V3 chat line.",
+    models:[["deepseek-r1","1.5b–671b reasoning"],["deepseek-v3","671b MoE chat"],["deepseek-coder-v2","16b · 236b"],["deepseek-coder","1.3b–33b"]] },
+  { id:"gemma", name:"Gemma", org:"Google", about:"Lightweight, capable models built from Gemini research — text, vision and code.",
+    models:[["gemma4","12b · 26b · 31b"],["gemma3","1b–27b multimodal"],["gemma3n","on-device"],["gemma2","2b–27b"],["codegemma","2b · 7b"],["embeddinggemma","embeddings"],["translategemma","translation"]] },
+  { id:"phi", name:"Phi", org:"Microsoft", about:"Small-but-mighty models that run on modest hardware.",
+    models:[["phi4-reasoning","14b reasoning"],["phi4","14b"],["phi4-mini","3.8b"],["phi3","3.8b · 14b"]] },
+  { id:"mistral", name:"Mistral", org:"Mistral AI", about:"Efficient European models — general, small, coding and mixture-of-experts.",
+    models:[["devstral-small-2","24b coding"],["ministral-3","edge line"],["mistral-small3.2","24b"],["mistral-nemo","12b"],["mixtral","MoE"],["mistral","7b"]] },
+  { id:"gpt-oss", name:"GPT-OSS", org:"OpenAI", about:"OpenAI's open-weight models — the first open GPT release, made for local hardware.",
+    models:[["gpt-oss","20b · 120b"]] },
+  { id:"glm", name:"GLM", org:"Zhipu AI", about:"Chat and document-understanding models from the GLM line.",
+    models:[["glm-4.7-flash","fast chat"],["glm-ocr","document OCR"]] },
+  { id:"nemotron", name:"Nemotron", org:"NVIDIA", about:"NVIDIA's open models tuned for accuracy and efficiency.",
+    models:[["nemotron-3-super","120b"]] },
+  { id:"granite", name:"Granite", org:"IBM", about:"Enterprise-focused, compact models for business text and code.",
+    models:[["granite3.1-moe","1b · 3b"],["granite-code","code line"]] },
+  { id:"olmo", name:"OLMo", org:"Allen Institute for AI", about:"Fully open models — weights, data and training code published.",
+    models:[["olmo2","7b · 13b"]] },
+  { id:"smollm", name:"SmolLM", org:"Hugging Face", about:"Tiny models designed for laptops and edge devices.",
+    models:[["smollm2","1.7b"],["smollm","1.7b"],["tinyllama","1.1b"]] },
+  { id:"falcon", name:"Falcon", org:"TII", about:"Efficient open models from the Technology Innovation Institute (UAE).",
+    models:[["falcon3","1b–10b"]] },
+  { id:"vision", name:"Vision & OCR", org:"various", about:"Models that read images, screenshots and documents.",
+    models:[["llava","7b · 13b · 34b"],["qwen3-vl","2b–235b"],["minicpm-v","8b"],["moondream","tiny vision"],["llama3.2-vision","11b · 90b"]] },
+  { id:"embeddings", name:"Embeddings & Search", org:"various", about:"Not chat models — they turn text into vectors for search, RAG and memory.",
+    models:[["nomic-embed-text","long context"],["mxbai-embed-large"],["bge-m3","multilingual"],["all-minilm","fast"],["snowflake-arctic-embed"],["qwen3-embedding","0.6b–8b"]] }
+];
+
+/* ---- category galleries ---- */
+const PROGRAMS = {
+  images: {
+    title:"IMAGES", glyph:"🖼️", sub:"Text-to-image generators",
+    blurb:"Turn a sentence into artwork. These tools render photographs, illustrations, concept art and posters from text prompts — from commercial stars to open-source engines you can run at home.",
+    programs:[
+      { name:"Midjourney", url:"https://www.midjourney.com",
+        desc:"The most famous AI art studio, loved for its painterly, cinematic style and its web editor.",
+        can:"Images from text & image prompts, style references, upscaling, editing and mood boards.",
+        avail:"Online", price:"Paid" },
+      { name:"Stable Diffusion (ComfyUI)", url:"https://github.com/comfyanonymous/ComfyUI",
+        desc:"The open-source powerhouse. ComfyUI is a node-based studio for Stable Diffusion & FLUX models with total pipeline control.",
+        can:"Photoreal images, anime, styles via community LoRAs/ControlNets, inpainting, upscaling — unlimited local generation.",
+        avail:"Local", price:"Free · open source",
+        req:"GPU with 6–8 GB+ VRAM for SDXL/FLUX (CPU possible but slow); Windows, Linux or macOS." },
+      { name:"FLUX.1 (Black Forest Labs)", url:"https://bfl.ai",
+        desc:"State-of-the-art image models by the original Stable Diffusion authors; excellent prompt following and text inside images.",
+        can:"High-detail images via API, or free local weights (FLUX.1 [schnell] Apache-2.0, [dev] non-commercial).",
+        avail:"Both", price:"Freemium · open weights",
+        req:"Local: 8–24 GB VRAM depending on variant (works quantized on 8 GB)." },
+      { name:"Adobe Firefly", url:"https://firefly.adobe.com",
+        desc:"Adobe's commercially-safe generative family, woven into Photoshop's Generative Fill and Express.",
+        can:"Images, generative fill/expand, text effects and video models trained on licensed content.",
+        avail:"Online", price:"Freemium" },
+      { name:"Leonardo.Ai", url:"https://leonardo.ai",
+        desc:"A creator-friendly studio built around game art, characters and consistent styles.",
+        can:"Images, characters, canvas editing, upscalers and fine-tuned style models.",
+        avail:"Online", price:"Freemium" },
+      { name:"DALL·E in ChatGPT", url:"https://chatgpt.com",
+        desc:"Conversational image creation inside ChatGPT — iterate by simply asking.",
+        can:"Images and edits from natural conversation, text rendering, restyling.",
+        avail:"Online", price:"Freemium" }
+    ]
+  },
+  music: {
+    title:"MUSIC", glyph:"🎵", sub:"Songs, soundtracks & sound design",
+    blurb:"Hum an idea in words and get a full song back. This wing covers generative music studios and local synthesis engines.",
+    programs:[
+      { name:"Suno", url:"https://suno.com",
+        desc:"The breakout text-to-song generator — full tracks with vocals, lyrics and cover art in any genre.",
+        can:"Complete songs from a prompt, custom lyrics, instrumentals, stem export on paid plans.",
+        avail:"Online", price:"Freemium" },
+      { name:"Stable Audio (Stability AI)", url:"https://stableaudio.com",
+        desc:"Stability AI's music & audio lab — fast generation with fine control of length and structure.",
+        can:"Music tracks and sound effects from text, audio-to-audio restyling.",
+        avail:"Online", price:"Freemium" },
+      { name:"AIVA", url:"https://www.aiva.ai",
+        desc:"A veteran composer AI focused on orchestral and cinematic scoring.",
+        can:"Soundtracks by style, MIDI editing & export for DAWs, custom style training.",
+        avail:"Online", price:"Freemium" },
+      { name:"MusicGen (Meta AudioCraft)", url:"https://github.com/facebookresearch/audiocraft",
+        desc:"Meta's open research stack for music and audio generation — free and local.",
+        can:"Instrumental music from text or melody conditioning; EnCodec audio tools.",
+        avail:"Local", price:"Free · open source",
+        req:"Weights are CC-BY-NC (non-commercial). GPU with ~8 GB VRAM for medium model; CPU possible slowly." },
+      { name:"Mubert", url:"https://mubert.com",
+        desc:"Generative royalty-free music streams for streamers, apps and video creators.",
+        can:"Endless genre-tuned tracks, API licensing for products.",
+        avail:"Online", price:"Freemium" }
+    ]
+  },
+  video: {
+    title:"VIDEO", glyph:"🎬", sub:"Text-to-video & cinematic AI",
+    blurb:"Motion is the newest frontier: describe a shot and watch it render. These studios animate text, stills and storyboards into clips.",
+    programs:[
+      { name:"Sora (OpenAI)", url:"https://sora.com",
+        desc:"OpenAI's video studio — storyboard-style scene building with synchronized audio.",
+        can:"Text-to-video and image-to-video with dialogue and sound effects, up to long cinematic shots.",
+        avail:"Online", price:"Paid" },
+      { name:"Runway", url:"https://runwayml.com",
+        desc:"The professional AI editing suite that pioneered Gen-style video models.",
+        can:"Video generation, motion brush, camera controls, inpainting, green-screen and editing tools.",
+        avail:"Online", price:"Freemium" },
+      { name:"Google Veo", url:"https://deepmind.google/models/veo/",
+        desc:"Google DeepMind's cinematic video family, available in the Gemini app and the Flow filmmaking tool.",
+        can:"High-fidelity text/image-to-video with native audio and strong prompt adherence.",
+        avail:"Online", price:"Freemium · Paid" },
+      { name:"Kling AI", url:"https://klingai.com",
+        desc:"Kuaishou's video engine known for lifelike motion and strong image-to-video.",
+        can:"Text/image-to-video, lip-sync, motion control, up to 2-minute extensions.",
+        avail:"Online", price:"Freemium" },
+      { name:"Pika", url:"https://pika.art",
+        desc:"Playful, viral-friendly video generation with signature effects.",
+        can:"Image-to-video animation, fun effects (squish, melt, inflate), scene additions.",
+        avail:"Online", price:"Freemium" },
+      { name:"Stable Video Diffusion", url:"https://github.com/Stability-AI/generative-models",
+        desc:"Stability AI's open video model — animate stills on your own GPU.",
+        can:"Image-to-video animation locally, research-friendly codebase.",
+        avail:"Local", price:"Free · open weights",
+        req:"GPU with 8 GB+ VRAM; community license terms apply — check the repository." }
+    ]
+  },
+  voice: {
+    title:"VOICE & AUDIO", glyph:"🎙️", sub:"Speech, cloning & audio cleanup",
+    blurb:"Voices that read, narrate, translate and sing. From flagship cloud voices to whisper-quiet local speech engines.",
+    programs:[
+      { name:"ElevenLabs", url:"https://elevenlabs.io",
+        desc:"The reference platform for lifelike speech — narration, dubbing and voice design.",
+        can:"Text-to-speech in 30+ languages, voice cloning, dubbing, sound effects generation.",
+        avail:"Online", price:"Freemium" },
+      { name:"Whisper (OpenAI)", url:"https://github.com/openai/whisper",
+        desc:"Open-source speech recognition that powers countless transcription apps.",
+        can:"Speech-to-text across ~100 languages, translation to English, subtitles.",
+        avail:"Local", price:"Free · open source",
+        req:"Runs on CPU (small models) to GPU (large models); Python or faster-whisper builds." },
+      { name:"Kokoro TTS", url:"https://huggingface.co/hexgrad/Kokoro-82M",
+        desc:"A featherweight 82M-parameter TTS that runs fast even without a GPU.",
+        can:"Natural multi-voice English (and more) speech locally, Apache-2.0 licensed.",
+        avail:"Local", price:"Free · open source",
+        req:"Very light — comfortable on CPU with a few GB of RAM." },
+      { name:"OpenAI Audio API", url:"https://platform.openai.com",
+        desc:"Studio-grade TTS voices and speech recognition through one developer API.",
+        can:"TTS in several voices/styles, transcription, translation, realtime speech APIs.",
+        avail:"Online", price:"Paid" },
+      { name:"Adobe Podcast Enhance", url:"https://podcast.adobe.com",
+        desc:"One-click studio magic for muddy recordings.",
+        can:"Speech enhancement (de-noise, de-reverb) and mic check for podcasts and video.",
+        avail:"Online", price:"Freemium" },
+      { name:"Bark (Suno)", url:"https://github.com/suno-ai/bark",
+        desc:"An expressive open TTS that can laugh, sigh and perform.",
+        can:"Multilingual speech with non-verbal sounds, music snippets and character voices.",
+        avail:"Local", price:"Free · open source",
+        req:"GPU recommended for speed; runs on CPU with patience." }
+    ]
+  },
+  avatars: {
+    title:"AVATARS & ANIMATION", glyph:"🎭", sub:"Talking heads & living characters",
+    blurb:"Give a face a voice and a performance. Perfect for presenters, storytelling and bringing portraits — even drawings — to life.",
+    programs:[
+      { name:"HeyGen", url:"https://www.heygen.com",
+        desc:"The leader in presenter-style avatars for courses, sales and social video.",
+        can:"Talking avatars from text, video translation with lip-sync, custom avatar clones.",
+        avail:"Online", price:"Freemium" },
+      { name:"Synthesia", url:"https://www.synthesia.io",
+        desc:"Enterprise-grade studio used for corporate training videos in 140+ languages.",
+        can:"Studio avatars, slides-to-video, branded templates, voice cloning.",
+        avail:"Online", price:"Paid · free demo" },
+      { name:"D-ID", url:"https://www.d-id.com",
+        desc:"Pioneered photo-to-talking-portrait animation — one still image becomes a speaker.",
+        can:"Talking photo avatars, agent-style streaming presenters, API access.",
+        avail:"Online", price:"Freemium" },
+      { name:"Hedra", url:"https://www.hedra.com",
+        desc:"Character-1 makes expressive talking characters with full head movement.",
+        can:"Animated characters from an image + audio/script, lip-sync and emotion.",
+        avail:"Online", price:"Freemium" },
+      { name:"Animated Drawings (Meta)", url:"https://sketch.metademolab.com",
+        desc:"A delightful free Meta demo that animates children's drawings.",
+        can:"Detects a drawn humanoid, rigs it and applies dancing/walking motions you can export.",
+        avail:"Online", price:"Free" },
+      { name:"LivePortrait", url:"https://github.com/KwaiVGI/LivePortrait",
+        desc:"Open-source portrait puppetry — a driving video steers any still portrait.",
+        can:"Facial reenactment and animation of photos/artwork locally.",
+        avail:"Local", price:"Free · open source",
+        req:"GPU with ~4–6 GB VRAM recommended for real-time speed." }
+    ]
+  },
+  text: {
+    title:"TEXT & STORIES", glyph:"📖", sub:"Writers' rooms & story engines",
+    blurb:"Co-authors, editors and adventure engines for wordsmiths — general assistants plus fiction-specialist studios and local alternatives.",
+    programs:[
+      { name:"ChatGPT (OpenAI)", url:"https://chatgpt.com",
+        desc:"The household-name assistant — brainstorming, drafting, editing and research in one place.",
+        can:"Stories, outlines, world-building, critique, rewriting; image generation too.",
+        avail:"Online", price:"Freemium" },
+      { name:"Claude (Anthropic)", url:"https://claude.ai",
+        desc:"Anthropic's assistant, prized for careful long-form prose and nuanced editing.",
+        can:"Long documents, style feedback, artifacts for interactive drafts, large context.",
+        avail:"Online", price:"Freemium" },
+      { name:"Google Gemini", url:"https://gemini.google.com",
+        desc:"Google's multimodal assistant woven into Docs, Gmail and the web.",
+        can:"Writing help with search grounding, long context, doc drafting.",
+        avail:"Online", price:"Freemium" },
+      { name:"NovelAI", url:"https://novelai.net",
+        desc:"A fiction-first studio for novelists with story continuation and lorebooks.",
+        can:"Prose continuation, character/world memory modules, TTS and image gen for scenes.",
+        avail:"Online", price:"Paid · free trial" },
+      { name:"Sudowrite", url:"https://www.sudowrite.com",
+        desc:"A novel-writing co-pilot with Describe, Story Engine and revision tools.",
+        can:"Expand scenes, generate descriptions, outline full novels chapter by chapter.",
+        avail:"Online", price:"Paid · free trial" },
+      { name:"KoboldCpp", url:"https://github.com/LostRuins/koboldcpp",
+        desc:"The beloved local story engine — an offline writing & adventure front-end for GGUF models.",
+        can:"Interactive fiction, world info memory, image generation hooks; fully offline.",
+        avail:"Local", price:"Free · open source",
+        req:"8 GB+ RAM for 7–8B models (CPU fine); GPU optional. Windows/Linux/macOS." }
+    ]
+  },
+  apps: {
+    title:"APPS & WEBSITES", glyph:"💻", sub:"Prompt-to-app builders & AI coding",
+    blurb:"Describe the software you imagine and these agents draft it — full AI coding partners from browser builders to IDE copilots.",
+    programs:[
+      { name:"GitHub Copilot", url:"https://github.com/features/copilot",
+        desc:"The original AI pair programmer, now with chat and autonomous agent mode.",
+        can:"Code completion, repo-aware chat, pull-request agents, multi-model choice.",
+        avail:"Both", price:"Freemium" },
+      { name:"Cursor", url:"https://cursor.com",
+        desc:"The AI-first code editor built around agents that understand your whole codebase.",
+        can:"Multi-file edits, agent mode, codebase chat, tab completion.",
+        avail:"Both", price:"Freemium" },
+      { name:"v0 (Vercel)", url:"https://v0.dev",
+        desc:"Vercel's generative-UI studio — describe an interface, get polished React/Tailwind code.",
+        can:"Landing pages, dashboards and components, deployable instantly to Vercel.",
+        avail:"Online", price:"Freemium" },
+      { name:"Bolt.new", url:"https://bolt.new",
+        desc:"StackBlitz's in-browser full-stack builder — prompt, run and deploy in one tab.",
+        can:"Web/mobile apps with frameworks like Next.js & Expo, one-click deploy.",
+        avail:"Online", price:"Freemium" },
+      { name:"Lovable", url:"https://lovable.dev",
+        desc:"Europe's fast-growing app builder — chat your way to a working web product.",
+        can:"Full web apps with auth & databases, GitHub sync, instant previews.",
+        avail:"Online", price:"Freemium" },
+      { name:"Replit Agent", url:"https://replit.com",
+        desc:"Cloud IDE where an agent scaffolds, codes, tests and hosts your project.",
+        can:"App generation from a prompt, databases, scheduling and deployment in the cloud.",
+        avail:"Online", price:"Freemium" }
+    ]
+  },
+  worlds: {
+    title:"3D & WORLDS", glyph:"🧊", sub:"Meshes, skyboxes & spatial scenes",
+    blurb:"Sculpt objects and whole skies from words. From game-ready meshes to 360° environments you can drop into engines.",
+    programs:[
+      { name:"Meshy AI", url:"https://www.meshy.ai",
+        desc:"A favourite game-dev pipeline tool for rapid 3D asset creation.",
+        can:"Text/image-to-3D meshes, PBR texturing, retopology, animation previews; export OBJ/FBX/GLB.",
+        avail:"Online", price:"Freemium" },
+      { name:"Tripo AI", url:"https://www.tripo3d.ai",
+        desc:"VAST's fast generator — single images become usable 3D models in under a minute.",
+        can:"Image/text-to-3D, auto-rigging for characters, stylized or photoreal outputs.",
+        avail:"Online", price:"Freemium" },
+      { name:"Spline AI", url:"https://spline.design",
+        desc:"Browser-native 3D design with an AI generative layer — no install needed.",
+        can:"3D scenes, AI object/style generation, interactive web embeds.",
+        avail:"Online", price:"Freemium" },
+      { name:"Rodin (Hyper3D)", url:"https://hyper3d.ai",
+        desc:"Deemos' high-detail 3D generator, popular for film-quality assets.",
+        can:"Image-to-3D with fine geometry, high-poly and quad-mesh exports.",
+        avail:"Online", price:"Freemium" },
+      { name:"Skybox AI (Blockade Labs)", url:"https://skybox.blockadelabs.com",
+        desc:"Paint entire 360° worlds with a sentence — the classic skybox generator.",
+        can:"Panoramic HDR-style environments in many styles, exportable to engines.",
+        avail:"Online", price:"Freemium" }
+    ]
+  },
+  models: {
+    title:"AI MODELS & BRAINS", glyph:"🧠", sub:"The frontier model families",
+    blurb:"Behind every generator sits a 'brain'. These are the flagship model families powering the modern AI era — most now run in the cloud AND at home via Ollama in the AI CORE.",
+    programs:[
+      { name:"OpenAI — GPT", url:"https://openai.com",
+        desc:"The GPT family powers ChatGPT and the API; the default generalist brain for millions.",
+        can:"Chat, reasoning, code, vision, voice — plus open GPT-OSS weights for local use.",
+        avail:"Both", price:"Freemium · Paid API" },
+      { name:"Anthropic — Claude", url:"https://www.anthropic.com",
+        desc:"Claude models are known for thoughtful writing, careful reasoning and strong coding.",
+        can:"Long-context chat, agents & computer use, artifacts.",
+        avail:"Both", price:"Freemium · Paid API" },
+      { name:"Google — Gemini", url:"https://gemini.google.com",
+        desc:"Google's multimodal family spanning the Gemini app, Workspace and DeepMind research.",
+        can:"Text, vision, audio, huge context; open Gemma siblings run locally.",
+        avail:"Both", price:"Freemium · Paid API" },
+      { name:"Meta — Llama", url:"https://www.llama.com",
+        desc:"The open-weight family that put frontier-style AI on home machines everywhere.",
+        can:"Chat & instruction models 1B–405B, vision variants; free weights, commercial-friendly license.",
+        avail:"Both", price:"Free · open weights" },
+      { name:"Mistral AI", url:"https://mistral.ai",
+        desc:"Europe's champion lab — efficient models for chat, code and edge devices.",
+        can:"Le Chat assistant, open weights (Mistral, Mixtral, Devstral, Ministral).",
+        avail:"Both", price:"Freemium · open weights" },
+      { name:"DeepSeek", url:"https://www.deepseek.com",
+        desc:"The lab behind the famous R1 reasoning models and V3 chat line — open and inexpensive.",
+        can:"Deep reasoning, math and code; open weights run locally via Ollama.",
+        avail:"Both", price:"Freemium · open weights" },
+      { name:"Qwen (Alibaba)", url:"https://chat.qwen.ai",
+        desc:"Alibaba's sprawling open family — possibly the widest model ecosystem today.",
+        can:"Chat, coder, VL vision, embedding models from 0.5B up to 480B.",
+        avail:"Both", price:"Freemium · open weights" }
+    ]
+  },
+  systems: {
+    title:"SYSTEMS & ENVIRONMENTS", glyph:"🐧", sub:"Pipelines, agents & frameworks",
+    blurb:"The machinery under the universe: node pipelines, agent frameworks and automation hubs that turn models into working systems.",
+    programs:[
+      { name:"ComfyUI", url:"https://www.comfy.org",
+        desc:"The node-graph engine of the open generative world — wire models, samplers and effects visually.",
+        can:"Image/video/audio pipelines, FLUX & SD workflows, custom nodes for anything.",
+        avail:"Local", price:"Free · open source",
+        req:"GPU with 6 GB+ VRAM recommended; Windows/Linux/macOS." },
+      { name:"n8n", url:"https://n8n.io",
+        desc:"The workflow automation hub with native AI agent nodes.",
+        can:"Connect apps & models into flows; self-host free or use cloud.",
+        avail:"Both", price:"Freemium · fair-code" },
+      { name:"LangChain", url:"https://www.langchain.com",
+        desc:"The best-known framework for building LLM applications and agents (Python & JS).",
+        can:"Chains, tool use, RAG pipelines, agent orchestration; LangSmith for observability.",
+        avail:"Local", price:"Free · open source" },
+      { name:"CrewAI", url:"https://www.crewai.com",
+        desc:"Role-playing multi-agent framework — assemble 'crews' that collaborate on tasks.",
+        can:"Define agent roles, tools and goals; run collaborative missions.",
+        avail:"Local", price:"Free · open source" },
+      { name:"Dify", url:"https://dify.ai",
+        desc:"A visual builder for LLM apps — chatbots, agents and RAG without boilerplate.",
+        can:"Prompt orchestration, knowledge bases, API backends; open source or cloud.",
+        avail:"Both", price:"Freemium · open source" },
+      { name:"Open WebUI", url:"https://openwebui.com",
+        desc:"A polished ChatGPT-like interface for Ollama and local models — self-hosted.",
+        can:"Chat UI, model management, RAG documents, multi-user support.",
+        avail:"Local", price:"Free · open source",
+        req:"Runs via Docker or pip alongside Ollama; any modest machine." }
+    ]
+  }
+};
+
+/* ---- AI CORE views ---- */
+const AI_CORE = {
+  overview: {
+    title:"AI CORE", glyph:"♾️", sub:"Local & Open-Source models",
+    html:`<p class="blurb">The AI CORE is NOXIS's engine room: <b>free, open-source AI you run on your own machine</b> — no subscription, no data leaving your home. The artwork's right-hand constellation is your launchpad: pick <b>Ollama</b> to learn the tool that runs models, pick a family (Llama, Qwen, Phi) to meet the models themselves, or open <b>+ Other Models</b> for the full catalog.</p>
+    <p class="kicker">The engine</p>
+    <div class="prog"><h3><a href="https://ollama.com">Ollama</a></h3>
+      <div class="chips"><span class="chip c-local">Local</span><span class="chip c-free">Free</span><span class="chip c-oss">MIT license</span></div>
+      <p>The one-command tool that downloads and runs open models locally on Windows, macOS and Linux. It is a <b>runner, not a model</b> — the families you see beside it are what travels inside it.</p>
+      <p class="req"><b>Requires:</b> 8 GB RAM for 7–8B models · 16 GB for 14B · 32 GB+ for 32B and up · GPU optional (NVIDIA/AMD/Apple silicon) · 4–40 GB disk per model.</p></div>
+    <p class="kicker">Start in one minute</p>
+    <code class="cmd"><span class="kw"># install from</span> ollama.com/download
+<span class="kw">$</span> ollama pull llama3.2
+<span class="kw">$</span> ollama run qwen3
+<span class="kw"># chat instantly in your terminal</span></code>
+    <p class="note">ℹ️ The model families live in a simple list inside this page (OLLAMA_FAMILIES) — new releases can be added in seconds without touching the design. Live catalog: <a href="https://ollama.com/library" style="color:#8fd0ff">ollama.com/library</a>.</p>`
+  },
+  ollama: {
+    title:"OLLAMA", glyph:"♾️", sub:"Run AI models locally — the runner, not a model",
+    intro:"Ollama is a free, open-source program (MIT) that downloads, manages and runs open-weight models on your own computer. Important distinction: <b>Ollama is the player — the families below are the music.</b>",
+    install:true
+  },
+  other: {
+    title:"+ OTHER MODELS", glyph:"✦", sub:"More families available through Ollama",
+    intro:"Beyond Llama, Qwen and Phi shown on the artwork, these families are ready to run through Ollama — click any family for its models and sizes."
+  },
+  ubuntu: {
+    title:"UBUNTU AI", glyph:"🐧", sub:"Local AI on Ubuntu Linux",
+    html:`<p class="blurb">The artwork celebrates the penguin for a reason — <b>Ubuntu Linux</b> is the classic home for self-hosted AI. "Ubuntu AI" is not a model: it's the practice of running your own models on your own machine, fully private and free.</p>
+    <p class="kicker">One-minute setup</p>
+    <code class="cmd"><span class="kw"># install Ollama on Ubuntu / Debian</span>
+<span class="kw">$</span> curl -fsSL https://ollama.com/install.sh | sh
+<span class="kw">$</span> ollama run qwen3
+<span class="kw"># optional web interface</span>
+<span class="kw">$</span> docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway \\
+    -v open-webui:/app/backend/data --restart always ghcr.io/open-webui/open-webui:main</code>
+    <p class="kicker">Good to know</p>
+    <div class="prog">
+      <div class="chips"><span class="chip c-local">Local</span><span class="chip c-free">Free</span></div>
+      <p>Any Ubuntu 22.04+ machine works for small models; NVIDIA/AMD GPUs accelerate the big ones. Pair with <a href="https://openwebui.com" style="color:#8fd0ff">Open WebUI</a> for a family-friendly chat interface.</p>
+      <p class="req"><b>Official sources:</b> <a href="https://ubuntu.com/download" style="color:#8fd0ff">ubuntu.com</a> · <a href="https://github.com/ollama/ollama" style="color:#8fd0ff">Ollama on GitHub</a> · <a href="https://ollama.com/library" style="color:#8fd0ff">Model library</a></p></div>`
+  },
+  familyTitle: {
+    llama:{ name:"LLAMA", glyph:"🦙", org:"Meta" },
+    qwen: { name:"QWEN",  glyph:"🌌", org:"Alibaba" },
+    phi:  { name:"PHI",   glyph:"Φ",  org:"Microsoft" }
+  }
+};
+
+const FOOTER_HTML = `<div class="foot">✳ NOXIS CREATE — The Creative Universe · Every project links to its official website or GitHub. Pricing & availability change often — always confirm on the official page. Data checked November 2026 (Ollama families: <a href="https://ollama.com/library">ollama.com/library</a>).</div>`;
+/* ============================================================
+   Interaction layer — mouse, keyboard & touch
+   ============================================================ */
+const stage   = document.getElementById("stage");
+const panel   = document.getElementById("panel");
+const bodyEl  = document.getElementById("panelBody");
+const gEl     = document.getElementById("panelGlyph");
+const tEl     = document.getElementById("panelTitle");
+const sEl     = document.getElementById("panelSub");
+const hint    = document.getElementById("hint");
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let lastTrigger = null;
+
+/* build the interactive zones */
+HOTSPOTS.forEach(h => {
+  const b = document.createElement("button");
+  b.className = "hotspot";
+  b.style.left = h.x + "%"; b.style.top = h.y + "%";
+  b.style.width = h.w + "%"; b.style.height = h.h + "%";
+  b.dataset.view = h.id;
+  b.setAttribute("aria-label", h.label);
+  b.setAttribute("title", h.label);
+  b.innerHTML = `<span class="sr">${h.label}</span>`;
+  b.addEventListener("click", () => openPanel(h.id, b));
+  stage.appendChild(b);
+});
+
+/* chip + entry renderers */
+const chip = (cls, txt) => `<span class="chip ${cls}">${txt}</span>`;
+const availChip = a => chip(a.includes("Local") && !a.includes("Both") ? "c-local" : a.includes("Both") ? "c-both" : "c-online", a);
+const priceChip = p => chip(p.includes("Free") && !p.includes("Freemium") ? "c-free" : p.includes("Freemium") ? "c-freemium" : p.includes("open") ? "c-oss" : "c-paid", p);
+
+function progHTML(p){
+  return `<article class="prog">
+    <h3><a href="${p.url}" target="_blank" rel="noopener noreferrer">${p.name} ↗</a></h3>
+    <div class="chips">${availChip(p.avail)}${priceChip(p.price)}</div>
+    <p>${p.desc}</p>
+    <p><b style="color:#e8ddc0">Can do:</b> ${p.can}</p>
+    ${p.req ? `<p class="req"><b>System requirements:</b> ${p.req}</p>` : ``}
+  </article>`;
+}
+function catHTML(cat){
+  const c = PROGRAMS[cat];
+  return `<p class="blurb">${c.blurb}</p>` + c.programs.map(progHTML).join("");
+}
+function famHTML(f, open){
+  return `<details class="family"${open ? " open" : ""}>
+    <summary><span class="fam">${f.name}</span><span class="org">${f.org}</span><span class="cnt">${f.models.length} models</span></summary>
+    <div class="fam-body">${f.about}
+      <div class="models">${f.models.map(m => `<a class="model" href="https://ollama.com/library/${m[0]}" target="_blank" rel="noopener noreferrer" title="${m[1]}">${m[0]}</a>`).join("")}</div>
+    </div></details>`;
+}
+function familiesList(exclude){
+  return OLLAMA_FAMILIES.filter(f => !exclude.includes(f.id)).map(f => famHTML(f, false)).join("");
+}
+const OLLAMA_REQS = `
+  <p class="kicker">System requirements</p>
+  <div class="prog">
+    <div class="chips"><span class="chip c-local">Local</span><span class="chip c-free">Free</span><span class="chip c-oss">MIT license</span></div>
+    <p class="req"><b>RAM:</b> 8 GB → 7–8B models · 16 GB → 14B · 32 GB+ → 32B+ &nbsp;|&nbsp; <b>GPU:</b> optional (NVIDIA / AMD / Apple silicon accelerate) &nbsp;|&nbsp; <b>OS:</b> Windows, macOS, Linux &nbsp;|&nbsp; <b>Disk:</b> 2–40 GB per model</p>
+    <p class="req"><b>Verify live list:</b> <a href="https://ollama.com/library" style="color:#8fd0ff">ollama.com/library</a> — new models appear weekly; this page's list is one object (OLLAMA_FAMILIES) and grows without touching the design.</p>
+  </div>`;
+
+/* view renderer */
+function render(view){
+  const f = AI_CORE.familyTitle;
+  if (view === "aicore"){
+    gEl.textContent = AI_CORE.overview.glyph; tEl.textContent = AI_CORE.overview.title;
+    sEl.textContent = AI_CORE.overview.sub;   bodyEl.innerHTML = AI_CORE.overview.html + FOOTER_HTML; return;
+  }
+  if (view === "fam-ollama"){
+    gEl.textContent = AI_CORE.ollama.glyph; tEl.textContent = AI_CORE.ollama.title; sEl.textContent = AI_CORE.ollama.sub;
+    bodyEl.innerHTML = `<p class="blurb">${AI_CORE.ollama.intro}</p>
+      <code class="cmd"><span class="kw">$</span> ollama pull llama3.2   <span class="kw"># any family below</span>
+<span class="kw">$</span> ollama run qwen3      <span class="kw"># chat in your terminal</span>
+<span class="kw">$</span> ollama serve         <span class="kw"># local API on :11434</span></code>
+      ${OLLAMA_REQS}
+      <p class="kicker">Model families — click to expand</p>
+      ${familiesList([])}${FOOTER_HTML}`; return;
+  }
+  if (view === "other-models"){
+    gEl.textContent = AI_CORE.other.glyph; tEl.textContent = AI_CORE.other.title; sEl.textContent = AI_CORE.other.sub;
+    bodyEl.innerHTML = `<p class="blurb">${AI_CORE.other.intro}</p>
+      <p class="kicker">The extended catalog</p>
+      ${familiesList(["llama","qwen","phi"])}${FOOTER_HTML}`; return;
+  }
+  if (view === "ubuntu"){
+    gEl.textContent = "🐧"; tEl.textContent = AI_CORE.ubuntu.title; sEl.textContent = AI_CORE.ubuntu.sub;
+    bodyEl.innerHTML = AI_CORE.ubuntu.html + FOOTER_HTML; return;
+  }
+  if (["fam-llama","fam-qwen","fam-phi"].includes(view)){
+    const id = view.split("-")[1];
+    const fam = OLLAMA_FAMILIES.find(x => x.id === id);
+    const meta = f[id];
+    gEl.textContent = meta.glyph; tEl.textContent = meta.name; sEl.textContent = `${fam.org} · via Ollama`;
+    bodyEl.innerHTML = `<p class="blurb">${fam.about}</p>
+      <p class="kicker">Models in the library</p>
+      ${famHTML(fam, true)}
+      ${OLLAMA_REQS}${FOOTER_HTML}`; return;
+  }
+  /* the 10 artistic categories */
+  const c = PROGRAMS[view];
+  gEl.textContent = c.glyph; tEl.textContent = c.title; sEl.textContent = c.sub;
+  bodyEl.innerHTML = `<div class="crumbs"><button data-view="aicore" type="button">✳ AI CORE</button><button data-view="fam-ollama" type="button">♾️ Ollama</button></div>` + catHTML(view) + FOOTER_HTML;
+}
+function openPanel(view, trigger){
+  lastTrigger = trigger || null;
+  render(view);
+  panel.classList.add("open");
+  panel.removeAttribute("inert");
+  hint.classList.add("gone");
+  document.getElementById("closeBtn").focus({preventScroll:true});
+  document.body.style.overflow = "hidden";
+}
+function closePanel(){
+  panel.classList.remove("open");
+  panel.setAttribute("inert","");
+  document.body.style.overflow = "";
+  if (lastTrigger) lastTrigger.focus({preventScroll:true});
+}
+document.getElementById("closeBtn").addEventListener("click", closePanel);
+document.getElementById("backdrop").addEventListener("click", closePanel);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && panel.classList.contains("open")) closePanel(); });
+bodyEl.addEventListener("click", e => {
+  const btn = e.target.closest("button[data-view]");
+  if (btn) openPanel(btn.dataset.view, btn);
+});
+
+/* one-time constellation reveal — shows that the symbols are alive */
+if (!reduced){
+  const spots = [...document.querySelectorAll(".hotspot")];
+  spots.forEach((b,i) => setTimeout(() => {
+    b.classList.add("reveal");
+    setTimeout(() => b.classList.remove("reveal"), 650);
+  }, 350 + i*150));
+  setTimeout(() => hint.classList.add("gone"), 9000);
+} else { hint.classList.add("gone"); }
+
+/* ---------- optional "Living sky" overlay v2 (OFF by default, artwork untouched) ---------- */
+const fx = document.getElementById("fx"), fxc = fx.getContext("2d");
+const skyToggle = document.getElementById("skyToggle");
+let skyOn = false, stars = [], meteors = [], raf = null, prevT = 0, lastMeteor = 0, nextMeteorIn = 1500;
+
+/* soft glow sprites (radial gradient) — far brighter than flat dots */
+function makeSprite(rgb){
+  const R = 32, s = document.createElement("canvas");
+  s.width = s.height = R * 2;
+  const c = s.getContext("2d");
+  const g = c.createRadialGradient(R, R, 0, R, R, R);
+  g.addColorStop(0,   `rgba(${rgb},1)`);
+  g.addColorStop(.22, `rgba(${rgb},.6)`);
+  g.addColorStop(.55, `rgba(${rgb},.18)`);
+  g.addColorStop(1,   `rgba(${rgb},0)`);
+  c.fillStyle = g; c.beginPath(); c.arc(R, R, R, 0, Math.PI*2); c.fill();
+  return s;
+}
+const SPRITES = [makeSprite("255,236,190"), makeSprite("150,200,255"), makeSprite("215,170,255"), makeSprite("255,252,240")];
+
+function sizeFx(){
+  const r = stage.getBoundingClientRect();
+  fx.width  = Math.max(1, Math.round(r.width  * devicePixelRatio));
+  fx.height = Math.max(1, Math.round(r.height * devicePixelRatio));
+}
+function seed(){
+  stars = Array.from({length:150}, () => ({
+    x: Math.random(), y: Math.random(),
+    r: .9 + Math.random()*2.1,                    /* core radius, css px */
+    big: Math.random() < .16,                     /* rare bright star with cross flare */
+    rot: Math.random()*Math.PI,
+    p: Math.random()*Math.PI*2,
+    s: .5 + Math.random()*1.5,                    /* twinkle speed */
+    sp: SPRITES[Math.floor(Math.random()*SPRITES.length)],
+    dx: (Math.random()-.5)*.010, dy: (Math.random()-.5)*.006   /* slow drift, units/sec */
+  }));
+}
+function spawnMeteor(){
+  const toLeft = Math.random() < .5;
+  const ang = (toLeft ? 145 : 35) * Math.PI/180 + (Math.random()-.5)*.4;
+  const sp = 14 + Math.random()*10;               /* % of stage per second */
+  meteors.push({
+    x: .08 + Math.random()*.84, y: .02 + Math.random()*.22,
+    vx: Math.cos(ang)*sp, vy: Math.abs(Math.sin(ang))*sp*.55 + 1.5,
+    life: 1, decay: .55 + Math.random()*.5,
+    len: 90 + Math.random()*100, w: 1.2 + Math.random()*1.4,
+    c: Math.random() < .55 ? "255,236,190" : "160,205,255"
+  });
+}
+function tick(t){
+  const dt = Math.min(.06, prevT ? (t - prevT)/1000 : .016);
+  prevT = t;
+  const d = devicePixelRatio, W = fx.width, H = fx.height;
+  fxc.clearRect(0, 0, W, H);
+  /* stars: halo sprite + bright core + rare cross flares */
+  for (const st of stars){
+    st.x += st.dx*dt; st.y += st.dy*dt;
+    if (st.x < -.02) st.x = 1.02; else if (st.x > 1.02) st.x = -.02;
+    if (st.y < -.02) st.y = 1.02; else if (st.y > 1.02) st.y = -.02;
+    const a = .22 + .78*Math.abs(Math.sin(t/1000*st.s + st.p));
+    const x = st.x*W, y = st.y*H;
+    const h = st.r*14*d*(st.big ? 1.9 : 1);
+    fxc.globalAlpha = a*(st.big ? 1 : .8);
+    fxc.drawImage(st.sp, x-h/2, y-h/2, h, h);
+    fxc.globalAlpha = Math.min(1, .35 + .65*a);
+    fxc.fillStyle = "rgba(255,252,242,.95)";
+    fxc.beginPath(); fxc.arc(x, y, st.r*d*.75, 0, Math.PI*2); fxc.fill();
+    if (st.big && a > .62){
+      fxc.globalAlpha = (a-.62)*1.6;
+      fxc.strokeStyle = "rgba(255,244,214,.9)";
+      fxc.lineWidth = 1.1*d; fxc.lineCap = "round";
+      const L = h*1.15;
+      fxc.save(); fxc.translate(x, y); fxc.rotate(st.rot);
+      fxc.beginPath(); fxc.moveTo(-L/2,0); fxc.lineTo(L/2,0);
+      fxc.moveTo(0,-L/2); fxc.lineTo(0,L/2); fxc.stroke();
+      fxc.restore();
+    }
+  }
+  /* shooting stars every few seconds */
+  if (t - lastMeteor > nextMeteorIn){ spawnMeteor(); lastMeteor = t; nextMeteorIn = 2600 + Math.random()*5500; }
+  for (let i = meteors.length-1; i >= 0; i--){
+    const m = meteors[i];
+    m.x += m.vx*dt; m.y += m.vy*dt; m.life -= m.decay*dt;
+    if (m.life <= 0 || m.x < -.15 || m.x > 1.15 || m.y > 1.15){ meteors.splice(i,1); continue; }
+    const a = Math.sin(Math.min(1, m.life)*Math.PI);
+    const tx = m.x*W, ty = m.y*H;
+    const nl = Math.hypot(m.vx, m.vy) || 1, L = m.len*d;
+    const ex = tx - m.vx/nl*L, ey = ty - m.vy/nl*L;
+    const g = fxc.createLinearGradient(tx, ty, ex, ey);
+    g.addColorStop(0, `rgba(${m.c},${.95*a})`);
+    g.addColorStop(1, `rgba(${m.c},0)`);
+    fxc.globalAlpha = 1;
+    fxc.strokeStyle = g; fxc.lineWidth = m.w*d; fxc.lineCap = "round";
+    fxc.beginPath(); fxc.moveTo(tx, ty); fxc.lineTo(ex, ey); fxc.stroke();
+    fxc.globalAlpha = a;
+    fxc.drawImage(SPRITES[0], tx-11*d, ty-11*d, 22*d, 22*d);
+  }
+  fxc.globalAlpha = 1;
+  raf = requestAnimationFrame(tick);
+}
+function setSky(on){
+  skyOn = on;
+  skyToggle.setAttribute("aria-pressed", String(on));
+  skyToggle.textContent = on ? "✦ Living sky: on" : "✦ Living sky: off";
+  if (on && !reduced){
+    sizeFx(); seed(); meteors = []; prevT = 0; lastMeteor = 0; nextMeteorIn = 1500;
+    raf = requestAnimationFrame(tick);
+  }
+  else { cancelAnimationFrame(raf); fxc.clearRect(0,0,fx.width,fx.height); }
+}
+skyToggle.addEventListener("click", () => setSky(!skyOn));
+addEventListener("resize", () => { if (skyOn) sizeFx(); });
+</script>
+</body>
+</html>
