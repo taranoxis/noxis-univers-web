@@ -172,7 +172,7 @@ form.addEventListener("submit", async event => {
         messages: [...agent.history.slice(-4), userMessage],
         token: challenge,
       }),
-      signal: AbortSignal.timeout(45_000),
+      signal: AbortSignal.timeout(75_000),
     });
     if (!response.ok) throw new Error(errors[response.status] || "");
     const { reply } = await response.json();

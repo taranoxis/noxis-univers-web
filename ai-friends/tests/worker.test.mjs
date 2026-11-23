@@ -86,6 +86,7 @@ test("every agent passes bounded context to the online model with its own person
     assert.ok(params.messages[0].content.startsWith("You are " + name));
     assert.deepEqual(params.messages.slice(1), messages);
     assert.equal(params.max_completion_tokens, 420);
+    assert.deepEqual(params.chat_template_kwargs, { enable_thinking: false });
     assert.equal(params.store, false);
   }
   const [verifyUrl, options] = verify.mock.calls[0].arguments;

@@ -124,6 +124,7 @@ export default {
           ...data.messages.map(({ role, content }) => ({ role, content })),
         ],
         max_completion_tokens: 420,
+        chat_template_kwargs: { enable_thinking: false },
         store: false,
         stream: false,
       });
