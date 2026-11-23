@@ -1,7 +1,7 @@
 import { endpoint, siteKey } from "./config.js";
 import { messageParts } from "./message-parts.mjs";
 
-const dialog = document.getElementById("ai-friends");
+const chatPage = document.getElementById("ai-friends");
 const picker = document.getElementById("friendsAgent");
 const portrait = document.getElementById("friendsPortrait");
 const messages = document.getElementById("friendsMessages");
@@ -19,7 +19,7 @@ let widget;
 let token;
 let busy = false;
 
-for (const { dataset } of document.querySelectorAll("#gallery [data-agent-id]")) {
+for (const { dataset } of document.querySelectorAll("#friendsRoster [data-agent-id]")) {
   const { agentId, name, img } = dataset;
   agents.set(agentId, { name, img, history: [], draft: "", notice: "" });
   picker.add(new Option(name, agentId));
@@ -46,7 +46,7 @@ function downloadText(filename, content) {
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
-  dialog.append(link);
+  chatPage.append(link);
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1_000);
@@ -182,22 +182,11 @@ async function prepareChallenge() {
       },
     });
   } catch {
-    status.textContent = "Verification is unavailable. Reopen AI Friends to retry.";
+    status.textContent = "Verification is unavailable. Reload this page to retry.";
   }
 }
 
-for (const trigger of [document.getElementById("friendsHotspot"), document.getElementById("friendsPortal")]) {
-  trigger.addEventListener("click", event => {
-    event.preventDefault();
-    dialog.showModal();
-    showAgent();
-  });
-}
-
-document.getElementById("friendsClose").addEventListener("click", () => dialog.close());
-dialog.addEventListener("keydown", event => {
-  if (event.key === "Escape") event.stopPropagation();
-});
+showAgent();
 picker.addEventListener("change", showAgent);
 input.addEventListener("input", () => {
   const agent = agents.get(picker.value);
@@ -274,7 +263,7 @@ form.addEventListener("submit", async event => {
     window.turnstile.reset(widget);
     if (picker.value === agentId) {
       showAgent();
-      if (dialog.open) input.focus();
+      input.focus();
     } else {
       updateControls();
     }

@@ -2761,7 +2761,7 @@ button.hotspot,
     <div class="choose-path-portal-wrap">
       <button class="portal-close-hotspot" id="portalCloseHotspot" onclick="document.getElementById('universe').classList.remove('open')" aria-label="Close portal"></button>
       <img src="assets/choose-your-path-final.png" alt="Choose Your Path" class="choose-path-portal-image">
-      <button type="button" class="friends-hotspot" id="friendsHotspot" aria-label="Open AI Friends chat" aria-haspopup="dialog"></button>
+      <a class="friends-hotspot" id="friendsHotspot" href="ai-friends/" aria-label="Open AI Friends chat"></a>
       <a id="booksHotspot" class="books-hotspot" href="books/" aria-label="Books archive"></a>
       <button id="discoverHotspot"
         class="discover-hotspot"
@@ -2794,7 +2794,7 @@ button.hotspot,
         </div>
       </a>
 
-      <a class="uportal portal-friends" href="#ai-friends" id="friendsPortal" aria-haspopup="dialog">
+      <a class="uportal portal-friends" href="ai-friends/" id="friendsPortal">
         <div class="uportal-content">
           <div class="tag">ENTITIES</div>
           <h3>AI Friends</h3>
@@ -2932,6 +2932,13 @@ moreButton.addEventListener(
   "click",
   toggleInfo
 );
+
+function returnToChooseYourPath() {
+  if (location.hash === "#choose-your-path") universe.classList.add("open");
+}
+
+returnToChooseYourPath();
+window.addEventListener("hashchange", returnToChooseYourPath);
 
 biggerButton.addEventListener(
   "click",
@@ -4938,33 +4945,6 @@ if (location.hash === '#booksPortal') {
 
 <!-- NOXIS SOUND LAB V1 -->
 <script src="assets/noxis-soundlab-link.js?v=1"></script>
-<dialog id="ai-friends" aria-labelledby="friendsTitle">
-  <header class="friends-header">
-    <h2 id="friendsTitle">AI Friends</h2>
-    <button type="button" id="friendsClose" aria-label="Close AI Friends">×</button>
-  </header>
-  <div class="friends-picker">
-    <img id="friendsPortrait" alt="" width="56" height="56" hidden>
-    <label>Choose a NOXIS agent
-      <select id="friendsAgent" autofocus>
-        <option value="">Choose an agent</option>
-      </select>
-    </label>
-  </div>
-  <div id="friendsMessages" role="log" aria-label="Conversation" tabindex="0" hidden></div>
-  <form id="friendsForm" hidden>
-    <p class="friends-note">You’re chatting with AI. Messages are sent to the online AI service. Please avoid sharing private information.</p>
-    <label for="friendsMessage">Your message</label>
-    <textarea id="friendsMessage" rows="2" maxlength="800" required></textarea>
-    <div id="friendsVerification"></div>
-    <div class="friends-actions">
-      <button id="friendsSend" type="submit" disabled>Send</button>
-      <button id="friendsSave" type="button" disabled>Save chat</button>
-      <button id="friendsClear" type="button">Clear chat</button>
-    </div>
-  </form>
-  <p id="friendsStatus" role="status"></p>
-</dialog>
-<script type="module" src="ai-friends/chat.js"></script>
+
 </body>
 </html>

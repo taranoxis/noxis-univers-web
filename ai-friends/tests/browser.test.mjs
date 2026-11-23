@@ -66,7 +66,8 @@ test("desktop, tablet and mobile can open AI Friends, chat and return to the ori
         await route.fulfill({ contentType: "text/javascript", body:
           `export const endpoint = ${JSON.stringify(chat)}; export const siteKey = "test-only";` });
       } else if (url.origin === origin && url.pathname.startsWith(prefix)) {
-        const path = decodeURIComponent(url.pathname.slice(prefix.length)) || "index.html";
+        const localPath = decodeURIComponent(url.pathname.slice(prefix.length));
+        const path = !localPath || localPath.endsWith("/") ? localPath + "index.html" : localPath;
         const types = { html: "text/html", js: "text/javascript", css: "text/css",
           png: "image/png", webp: "image/webp", svg: "image/svg+xml", mjs: "text/javascript" };
         const type = types[path.split(".").at(-1)];
@@ -80,7 +81,9 @@ test("desktop, tablet and mobile can open AI Friends, chat and return to the ori
     });
     await page.goto(origin + prefix, { waitUntil: "domcontentloaded" });
     await page.locator("#biggerButton").click();
-    await page.getByRole("button", { name: "Open AI Friends chat" }).click();
+    await page.getByRole("link", { name: "Open AI Friends chat" }).click();
+    await page.waitForURL(origin + prefix + "ai-friends/");
+    assert.equal(await page.getByText("CHOOSE YOUR PATH", { exact: true }).count(), 0);
     const picker = page.locator("#friendsAgent");
     const save = page.getByRole("button", { name: "Save chat" });
     const dialog = await page.locator("#ai-friends").boundingBox();
@@ -138,8 +141,9 @@ test("desktop, tablet and mobile can open AI Friends, chat and return to the ori
     assert.equal(await readFile(await savedCode.path(), "utf-8"), source);
     assert.equal(calls.at(-1).at(-3).content, "De unde vine un gând?");
 
-    await page.keyboard.press("Escape");
-    await page.locator("#ai-friends").waitFor({ state: "hidden" });
+    await page.getByRole("link", { name: "Back to Choose Your Path" }).click();
+    await page.waitForURL(origin + prefix + "#choose-your-path");
+    assert.equal(await page.locator("#ai-friends").count(), 0);
     assert.ok(await page.locator("#universe").evaluate(element => element.classList.contains("open")));
     assert.ok(await page.locator("#booksHotspot").isVisible());
     assert.ok(await page.locator("#discoverHotspot").isVisible());
