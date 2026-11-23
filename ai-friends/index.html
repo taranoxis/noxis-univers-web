@@ -23,7 +23,7 @@
   </div>
   <div id="friendsMessages" role="log" aria-label="Conversation" tabindex="0" hidden></div>
   <form id="friendsForm" hidden>
-    <p class="friends-note">You’re chatting with AI. Messages and attachments are sent to Cloudflare when you press Send. Please avoid sharing private information.</p>
+    <p class="friends-note">You’re chatting with AI. Messages, images and text files are sent to Cloudflare when you press Send. Songs are analyzed in your browser and only their timing and level measurements are shared. Please avoid sharing private information.</p>
     <label for="friendsMessage">Your message</label>
     <textarea id="friendsMessage" rows="2" maxlength="4000"></textarea>
     <div class="friends-attachment" id="friendsAttachment" hidden>
@@ -31,11 +31,11 @@
       <button type="button" id="friendsRemoveFile">Remove attachment</button>
     </div>
     <p id="friendsFileStatus" class="friends-file-status" role="status"></p>
-    <input type="file" id="friendsFile" accept=".txt,.md,.csv,.tsv,.json,.png,.jpg,.jpeg,.webp" hidden>
+    <input type="file" id="friendsFile" accept=".txt,.md,.csv,.tsv,.json,.png,.jpg,.jpeg,.webp,.mp3,.wav,.m4a,.flac,.ogg,.opus" hidden>
     <div id="friendsVerification"></div>
     <div class="friends-actions">
       <button id="friendsSend" type="submit" disabled>Send</button>
-      <button id="friendsAttach" type="button" title="PNG, JPG or WebP up to 20 MB. Large photos are resized automatically. TXT, MD, CSV, TSV or JSON up to 12,000 characters.">Attach file</button>
+      <button id="friendsAttach" type="button" title="PNG, JPG or WebP up to 20 MB. Large photos are resized automatically. TXT, MD, CSV, TSV or JSON up to 12,000 characters. MP3, WAV, M4A, FLAC, OGG or Opus up to 40 MB and 10 minutes.">Attach file</button>
       <button id="friendsSave" type="button" disabled>Save chat</button>
       <button id="friendsClear" type="button">Clear chat</button>
     </div>

@@ -10,6 +10,28 @@ const origin = "https://taranoxis.github.io";
 const prefix = "/noxis-univers-web/";
 const chat = origin + "/test-chat";
 const root = new URL("../../", import.meta.url);
+function testSong() {
+  const sampleRate = 16_000;
+  const samples = sampleRate * 4;
+  const wav = Buffer.alloc(44 + samples * 2);
+  wav.write("RIFF", 0);
+  wav.writeUInt32LE(wav.length - 8, 4);
+  wav.write("WAVEfmt ", 8);
+  wav.writeUInt32LE(16, 16);
+  wav.writeUInt16LE(1, 20);
+  wav.writeUInt16LE(1, 22);
+  wav.writeUInt32LE(sampleRate, 24);
+  wav.writeUInt32LE(sampleRate * 2, 28);
+  wav.writeUInt16LE(2, 32);
+  wav.writeUInt16LE(16, 34);
+  wav.write("data", 36);
+  wav.writeUInt32LE(samples * 2, 40);
+  for (let i = samples / 2; i < samples; i++) {
+    wav.writeInt16LE(Math.round(16_000 * Math.sin(i * 2 * Math.PI * 440 / sampleRate)), 44 + i * 2);
+  }
+  return wav;
+}
+
 const mockedWidget = `
   let widgetOptions;
   let counter = 0;
@@ -185,6 +207,19 @@ test("desktop, tablet and mobile can open AI Friends, chat and return to the ori
     assert.match(dataUrl, /^data:image\/jpeg;base64,/);
     assert.ok(Buffer.from(dataUrl.split(",")[1], "base64").length <= 1_000_000);
     assert.equal(calls.at(-1).at(-1).content[1].image_url.url, dataUrl);
+
+    await picker.selectOption({ label: "Nyxin Noxis" });
+    await file.setInputFiles({ name: "song-test.wav", mimeType: "audio/wav", buffer: testSong() });
+    await page.getByText("song-test.wav (audio timeline)", { exact: true }).waitFor();
+    const songRequest = page.waitForRequest(chat);
+    await page.getByRole("button", { name: "Send", exact: true }).click();
+    const sentSong = (await songRequest).postDataJSON().messages.at(-1);
+    assert.equal(sentSong.attachment.kind, "text");
+    assert.deepEqual(JSON.parse(sentSong.attachment.data.split("\n").at(-1)), {
+      duration_seconds: 4, window_seconds: 2, rms_dbfs: [-90, -9],
+    });
+    await page.getByText("Attachment: song-test.wav", { exact: true }).waitFor();
+    assert.match(calls.at(-1)[0].content, /^You are Nyxin Noxis/);
 
     await page.getByRole("link", { name: "Back to Choose Your Path" }).click();
     await page.waitForURL(origin + prefix + "#choose-your-path");

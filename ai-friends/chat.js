@@ -1,6 +1,7 @@
 import { endpoint, siteKey } from "./config.js";
 import { messageParts } from "./message-parts.mjs";
 import { IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_TEXT_BYTES, MAX_TEXT_CHARS } from "./attachments.mjs";
+import { analyzeSong, isSong } from "./song-analysis.mjs";
 
 const chatPage = document.getElementById("ai-friends");
 const picker = document.getElementById("friendsAgent");
@@ -39,7 +40,8 @@ function updateControls() {
   clear.disabled = busy;
   attach.disabled = removeFile.disabled = busy || Boolean(agent?.readingFile);
   attachmentRow.hidden = !agent?.attachment;
-  fileName.textContent = agent?.attachment?.name || "";
+  const attachment = agent?.attachment;
+  fileName.textContent = attachment ? attachment.name + (attachment.song ? " (audio timeline)" : "") : "";
   fileStatus.textContent = agent?.readingFile ? "Reading attachment…" : agent?.fileError || "";
 }
 
@@ -85,6 +87,11 @@ async function resizeImage(file) {
 async function readAttachment(file) {
   const name = file.name.slice(0, 120);
   if (!file.size) throw new Error("This file is empty.");
+  if (isSong(file)) {
+    const summary = await analyzeSong(file);
+    const data = "Browser measurements only. RMS dBFS values are average signal levels in consecutive windows starting at 0 seconds. -90 dBFS is the measurement floor. This data does not contain the recording, musical events, lyrics, or verified section labels.\n" + JSON.stringify(summary);
+    return { name, kind: "text", data, song: true };
+  }
   if (Object.hasOwn(IMAGE_TYPES, file.type)) {
     if (file.size > MAX_ORIGINAL_IMAGE_BYTES) throw new Error("Choose a photo of up to 20 MB.");
     const header = await readImageDataUrl(file.slice(0, 16, file.type));
@@ -96,7 +103,7 @@ async function readAttachment(file) {
     return { name, kind: "image", data };
   }
   if (!/\.(txt|md|csv|tsv|json)$/i.test(file.name)) {
-    throw new Error("Choose PNG, JPG, WebP, TXT, MD, CSV, TSV or JSON.");
+    throw new Error("Choose an image, text or audio file in a supported format.");
   }
   if (file.size > MAX_TEXT_BYTES) throw new Error("Choose a text file under 12,000 characters.");
   let data;
@@ -350,7 +357,10 @@ form.addEventListener("submit", async event => {
   if (!configured || !agent || (!content && !agent.attachment) || agent.readingFile || !token || busy) return;
 
   const attachment = agent.attachment;
-  const userMessage = { role: "user", content, ...(attachment && { attachment }) };
+  const prompt = content || (attachment?.song
+    ? "Use the measured audio timeline to suggest visual scene changes. Distinguish measured changes from creative suggestions."
+    : "");
+  const userMessage = { role: "user", content: prompt, ...(attachment && { attachment }) };
   const challenge = token;
   const draft = agent.draft;
   token = undefined;
