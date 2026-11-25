@@ -5,13 +5,13 @@ const assert = require('node:assert/strict');
  const browser=await chromium.launch();
  fs.mkdirSync('qa-screenshots',{recursive:true});
  const sizes=[[360,640],[390,844],[430,932],[768,1024],[1024,768],[1366,768],[1920,1080]];
- const routes=['','ai-friends/','noxis-tv/','books/','create/','ai-tools/'];
+ const routes=['','ai-friends/','noxis-tv/','books/','create/','ai-tools/',"projects/questions-to-the-universe/noxis-constellation-web.html","archives/","archives/nyxin/","archives/nyxer/","archives/ar-in/","archives/aren/","archives/ar-on/","projects/nyxer-trader/","projects/music-to-video/","projects/creative-prototypes/","projects/sound-lab/"];
  const failures=[];
  try {
  for(const [width,height] of sizes){
  const page=await browser.newPage({viewport:{width,height},hasTouch:width<=1024,isMobile:width<=1024});
  for(const route of routes){
- const name=(route.replaceAll('/','')||'home')+'-'+width+'x'+height;
+ const name=(route.replace(/[^a-zA-Z0-9-]+/g,'-')||'home')+'-'+width+'x'+height;
  try{
  const response=await page.goto('http://127.0.0.1:8765/'+route,{waitUntil:'domcontentloaded'});
  assert(response.ok(),'HTTP '+response.status());
@@ -30,6 +30,10 @@ const assert = require('node:assert/strict');
  if(width<=1024 && route==='create/'){
  await page.locator('.create-mobile-grid button').first().click();
  assert(await page.locator('#panel').evaluate(el=>el.classList.contains('open')),'Create panel did not open');
+ }
+ if(route.includes('questions-to-the-universe')){
+ assert(await page.locator('#homeBack').isVisible(),'Back link hidden');
+ assert(await page.locator('#playBtn').count() || await page.locator('audio').count(),'Audio player missing');
  }
  console.log('PASS',name);
  }catch(e){failures.push(name+': '+e.message);console.error('FAIL',name,e.message);}
