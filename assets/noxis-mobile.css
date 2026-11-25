@@ -56,12 +56,3 @@ html,body{width:100%!important;max-width:100%!important}
 .universe .universe-close{color:var(--gold2)!important;background:#071017!important;border:1px solid var(--gold)!important;width:44px!important;height:44px!important}
 .universe .noxis-mobile-nav{padding-top:70px}
 }
-
-/* Landscape cosmic view: preserve artwork coordinates and original portals. */
-@media (orientation:landscape) and (max-width:1366px) and (pointer:coarse){
- .world{display:flex!important;justify-content:center!important;align-items:center!important;min-height:100dvh!important;height:100dvh!important;overflow:hidden!important}
- .world .scene{width:min(100vw,150dvh)!important;height:auto!important;aspect-ratio:3/2!important;flex:none!important}
- .world .scene .hotspot,.world .scene .bigger-hotspot{visibility:visible}
- .world .noxis-mobile-nav,.universe .noxis-mobile-nav{display:none}
- .universe .choose-path-portal-wrap{display:block!important}
-}
