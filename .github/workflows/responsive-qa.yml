@@ -2,6 +2,8 @@ name: NOXIS Responsive QA
 on:
   push:
     branches: [mobile-responsive]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
