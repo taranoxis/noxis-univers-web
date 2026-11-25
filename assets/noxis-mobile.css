@@ -1,0 +1,17 @@
+.noxis-mobile-nav{display:none}
+@media (max-width:1024px), (hover:none) and (pointer:coarse) and (max-width:1366px){
+html,body{height:auto!important;min-height:100%;overflow-x:hidden!important;overflow-y:auto!important}
+.world{width:100%;min-height:100dvh;overflow:visible!important}
+.world .scene{width:100%;height:auto;aspect-ratio:3/2}
+.noxis-mobile-nav{display:block;padding:16px clamp(12px,4vw,36px) 28px;color:var(--text);text-align:center}
+.noxis-mobile-nav h1,.noxis-mobile-nav h2{font-size:clamp(20px,4vw,32px);color:var(--gold2);margin:0 0 16px}
+.noxis-mobile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:900px;margin:auto}
+.noxis-mobile-grid a,.noxis-mobile-grid button{display:flex;align-items:center;justify-content:center;min-height:56px;padding:12px;border:1px solid #527b83;border-radius:12px;background:linear-gradient(145deg,#10252e,#071017);color:#f4fbfc;font:600 16px/1.35 Inter,system-ui,sans-serif;text-decoration:none;overflow-wrap:anywhere;cursor:pointer}
+.noxis-mobile-grid :focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+.world .scene .hotspot,.world .scene .bigger-hotspot{visibility:hidden}
+.world .scene .info-panel.show{position:fixed;top:12px;bottom:auto;max-height:85dvh;overflow:auto;z-index:100}
+.universe .choose-path-portal-wrap{display:none!important}
+.universe .universe-shell{max-height:94dvh!important;overflow:auto!important}
+.gallery-shell{max-height:94dvh!important;padding:20px 12px!important}
+}
+@media(max-width:420px){.noxis-mobile-grid{grid-template-columns:1fr}}
