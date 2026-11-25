@@ -211,6 +211,26 @@
     *,*::before,*::after{transition:none!important; animation:none!important}
     #fx{display:none}
   }
+/* NOXIS mobile responsive v1 */
+.create-mobile-nav{display:none}
+@media(max-width:1024px),(hover:none) and (pointer:coarse) and (max-width:1366px){
+body{justify-content:flex-start;padding-top:64px;padding-bottom:24px}
+.stage{width:100%;max-height:none;flex-shrink:0}
+.stage .hotspot{visibility:hidden}
+#hint{display:none}
+.portal-return,#skyToggle{min-height:44px;display:inline-flex;align-items:center;max-width:48%;white-space:normal}
+.create-mobile-nav{display:block;width:min(100%,900px);padding:16px}
+.create-mobile-nav h2{color:var(--gold);text-align:center;font-size:1.3rem}
+.create-mobile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.create-mobile-grid button{min-height:56px;padding:12px;border:1px solid var(--gold-soft);border-radius:12px;background:#10182d;color:var(--text);font:600 16px/1.4 system-ui;overflow-wrap:anywhere;cursor:pointer}
+.create-mobile-grid button:focus-visible{outline:2px solid var(--gold)}
+.sheet{width:min(100%,720px)}
+.sheet-head{padding:12px;gap:8px}
+.sheet-head>div{min-width:0;overflow-wrap:anywhere}
+.sheet-body{min-height:0;padding:16px;overflow-wrap:anywhere}
+}
+@media(max-width:420px){.create-mobile-grid{grid-template-columns:1fr}.sheet-head .glyph{display:none}}
+
 </style>
 </head>
 <body>
@@ -694,6 +714,14 @@ HOTSPOTS.forEach(h => {
   b.addEventListener("click", () => openPanel(h.id, b));
   stage.appendChild(b);
 });
+
+const mobileNav=document.createElement("nav");
+mobileNav.className="create-mobile-nav";
+mobileNav.setAttribute("aria-label","Creative universe categories");
+const mobileTitle=document.createElement("h2");mobileTitle.textContent="Explore NOXIS CREATE";mobileNav.append(mobileTitle);
+const mobileGrid=document.createElement("div");mobileGrid.className="create-mobile-grid";mobileNav.append(mobileGrid);
+HOTSPOTS.forEach(h=>{const b=document.createElement("button");b.type="button";b.textContent=h.label;b.addEventListener("click",()=>openPanel(h.id,b));mobileGrid.append(b);});
+stage.after(mobileNav);
 
 /* chip + entry renderers */
 const chip = (cls, txt) => `<span class="chip ${cls}">${txt}</span>`;

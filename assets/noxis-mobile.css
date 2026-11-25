@@ -1,0 +1,58 @@
+.noxis-mobile-nav{display:none}
+@media (max-width:1024px), (hover:none) and (pointer:coarse) and (max-width:1366px){
+html,body{height:auto!important;min-height:100%;overflow-x:hidden!important;overflow-y:auto!important}
+.world{width:100%;min-height:100dvh;overflow:visible!important}
+.world .scene{width:100%;height:auto;aspect-ratio:3/2}
+.noxis-mobile-nav{display:block;padding:16px clamp(12px,4vw,36px) 28px;color:var(--text);text-align:center}
+.noxis-mobile-nav h1,.noxis-mobile-nav h2{font-size:clamp(20px,4vw,32px);color:var(--gold2);margin:0 0 16px}
+.noxis-mobile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:900px;margin:auto}
+.noxis-mobile-grid a,.noxis-mobile-grid button{display:flex;align-items:center;justify-content:center;min-height:56px;padding:12px;border:1px solid #527b83;border-radius:12px;background:linear-gradient(145deg,#10252e,#071017);color:#f4fbfc;font:600 16px/1.35 Inter,system-ui,sans-serif;text-decoration:none;overflow-wrap:anywhere;cursor:pointer}
+.noxis-mobile-grid :focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+.world .scene .hotspot,.world .scene .bigger-hotspot{visibility:hidden}
+.world .scene .info-panel.show{position:fixed;top:12px;bottom:auto;max-height:85dvh;overflow:auto;z-index:100}
+.universe .choose-path-portal-wrap{display:none!important}
+.universe .universe-shell{max-height:94dvh!important;overflow:auto!important}
+.gallery-shell{max-height:94dvh!important;padding:20px 12px!important}
+}
+@media(max-width:420px){.noxis-mobile-grid{grid-template-columns:1fr}}
+
+/* Entities, Discover and Genesis */
+@media (max-width:1024px), (hover:none) and (pointer:coarse) and (max-width:1366px){
+.gallery,.entity-profile,.noxis-id-viewer{padding:10px!important}
+.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.gallery-grid .entity{min-width:0;overflow-wrap:anywhere}
+.entity-profile-card{width:min(100%,760px)!important;max-height:92dvh!important;overflow:auto!important;grid-template-columns:minmax(0,1fr)!important}
+.entity-profile-image{min-height:0!important;height:auto!important}
+.entity-profile-image img{max-height:45dvh!important;object-fit:contain!important}
+.entity-profile-copy{padding:20px!important;overflow-wrap:anywhere}
+.noxis-id-card{max-width:100%!important;max-height:92dvh!important;overflow:auto!important}
+#noxisIdImage{max-width:100%!important;max-height:70dvh!important;object-fit:contain!important}
+.noxis-id-archive{overflow-wrap:anywhere}
+#discoverScreen .discover-content{width:100%!important;max-height:94dvh!important;padding:22px 12px!important;overflow-y:auto!important;overflow-x:hidden!important}
+#noxisGalacticStage{height:auto!important;min-height:0!important;display:flex;flex-direction:column;align-items:center;gap:20px}
+#noxisGalacticStage .galactic-orbits{display:none}
+#noxisGalacticStage #noxisConstellation{position:relative;inset:auto;width:100%;pointer-events:auto}
+#noxisGalacticStage #noxisClock{position:relative;left:auto;top:auto;transform:none;width:min(80vw,500px)!important;margin:15px auto!important}
+#noxisGalacticStage #discoverCards{position:relative;inset:auto;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;height:auto;width:100%;justify-items:center}
+#noxisGalacticStage #discoverCards .discover-card{position:relative;left:auto!important;top:auto!important;transform:none;width:min(100%,195px)!important;min-width:0}
+#noxisGalacticStage #noxisClockMessage{position:relative;left:auto;bottom:auto;transform:none;width:auto}
+#discoverScreen .discover-content:has(#discoverDetail:not([hidden])) #noxisGalacticStage{display:none!important}
+#noxisClock .noxis-clock-agents button{min-width:44px;min-height:44px}
+#noxisClock .noxis-clock-agents button img{width:clamp(36px,12vw,86px)!important;height:auto!important}
+#genesisScreen{padding:64px 10px 20px!important;overflow:auto!important}
+#genesisScreen .genesis-cover{width:auto!important;max-width:100%!important;max-height:calc(100dvh - 84px)!important;object-fit:contain!important}
+#genesisClose,.gallery-close,.entity-profile-close,.noxis-id-close,.discover-close{min-width:44px;min-height:44px}
+}
+@media(max-width:580px){.gallery-grid{grid-template-columns:minmax(0,1fr)!important}}
+
+/* QA: override legacy fixed viewport calibration */
+@media (max-width:1024px), (hover:none) and (pointer:coarse) and (max-width:1366px){
+html,body{width:100%!important;max-width:100%!important}
+.world{display:block!important;width:100%!important;height:auto!important;min-height:100dvh!important}
+.world .scene{width:100%!important;height:auto!important;max-width:100%!important;aspect-ratio:3/2!important}
+.world .scene .scene-bg{object-fit:contain!important}
+.world .scene .info-panel.show{width:min(92vw,760px)!important}
+#genesisScreen .genesis-cover{height:auto!important}
+.universe .universe-close{color:var(--gold2)!important;background:#071017!important;border:1px solid var(--gold)!important;width:44px!important;height:44px!important}
+.universe .noxis-mobile-nav{padding-top:70px}
+}

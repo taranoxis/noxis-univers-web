@@ -225,3 +225,20 @@
   margin-top: .45rem;
   border-radius: 8px;
 }
+
+/* NOXIS mobile responsive v1 */
+@media (max-width: 64rem), (hover: none) and (pointer: coarse) and (max-width: 85.375rem) {
+  .friends-page { display:block; min-height:100dvh; }
+  #ai-friends { width:100%; height:auto; min-height:100dvh; max-height:none; margin:0; border-radius:0; padding:clamp(.75rem,3vw,1.5rem); padding-bottom:max(1rem,env(safe-area-inset-bottom)); overflow:visible; }
+  #ai-friends .friends-header { flex-wrap:wrap; }
+  #ai-friends .friends-back { display:inline-flex; align-items:center; min-height:44px; text-align:start; }
+  #friendsMessages { flex:1 1 auto; min-height:10rem; max-height:55dvh; overflow:auto; }
+  #ai-friends .friends-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
+  #ai-friends .friends-actions button { min-height:48px; overflow-wrap:anywhere; }
+  #ai-friends textarea,#ai-friends select { font-size:16px; min-height:44px; }
+  #friendsForm,#friendsVerification,#friendsFilename { min-width:0; max-width:100%; overflow-wrap:anywhere; }
+  #friendsMessages .friends-image { max-width:100%; height:auto; }
+}
+@media (max-height: 480px) and (pointer:coarse) {
+  #friendsMessages { max-height:45dvh; }
+}

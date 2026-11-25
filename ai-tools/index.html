@@ -33,7 +33,10 @@
     :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
     .status{min-height:1.4em;margin-bottom:0}
     @media(max-width:49rem){.columns{grid-template-columns:1fr}}
-  </style>
+  
+/* NOXIS mobile responsive v1 */
+@media(max-width:64rem){nav,main{width:calc(100% - 1.5rem)}.columns{grid-template-columns:minmax(0,1fr)}.fields{grid-template-columns:repeat(2,minmax(0,1fr))}.fields label{min-width:0}input,textarea,select{font-size:16px;min-height:48px}button,.action{min-height:48px}nav a{display:inline-flex;align-items:center;min-height:44px}.panel{overflow-wrap:anywhere}} @media(max-width:36rem){.fields{grid-template-columns:1fr}.actions{display:grid;grid-template-columns:1fr}.actions>*{text-align:center}button[type=submit]{width:100%}#prompt{min-height:14rem}}
+</style>
   <script src="release.js" defer></script>
 </head>
 <body>
