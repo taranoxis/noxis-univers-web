@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
  const browser=await chromium.launch();
  fs.mkdirSync('qa-screenshots',{recursive:true});
  const sizes=[[360,640],[390,844],[430,932],[768,1024],[1024,768],[1366,768],[1920,1080]];
- const routes=['','ai-friends/','noxis-tv/','books/','create/','ai-tools/',"projects/questions-to-the-universe/noxis-constellation-web.html","archives/","archives/nyxin/","archives/nyxer/","archives/ar-in/","archives/aren/","archives/ar-on/","projects/nyxer-trader/","projects/music-to-video/","projects/creative-prototypes/","projects/sound-lab/"];
+ const routes=['','ai-friends/','noxis-tv/','books/','create/','ai-tools/',"projects/questions-to-the-universe/noxis-constellation-web.html","archives/","archives/nyxin/","archives/nyxer/","archives/ar-in/","archives/aren/","archives/ar-on/","projects/nyxer-trader/","projects/music-to-video/","projects/creative-prototypes/","projects/sound-lab/","projects/noxis-bbq/"];
  const failures=[];
  try {
  for(const [width,height] of sizes){
