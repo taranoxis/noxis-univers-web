@@ -39,7 +39,26 @@
     [hidden] { display: none !important; }
     :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
     @media (max-width: 49rem) { .studio { grid-template-columns: 1fr; } }
-  </style>
+  
+    /* NOXIS mobile responsive v1 */
+    @media (max-width:64rem), (hover:none) and (pointer:coarse) and (max-width:85.375rem) {
+      main, nav { width:calc(100% - 1.5rem); }
+      .studio { grid-template-columns:minmax(0,1fr); }
+      .panel { min-width:0; padding:clamp(.65rem,2vw,1rem); overflow-wrap:anywhere; }
+      .screen { min-height:0; width:100%; grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr); }
+      .screen video,.screen img { min-width:0; max-width:100%; }
+      button,.download { min-height:48px; font-size:1rem; }
+      nav a { display:inline-flex; align-items:center; min-height:44px; }
+      input[type="file"] { min-width:0; max-width:100%; font-size:16px; }
+      input[type="file"]::file-selector-button { min-height:44px; max-width:100%; }
+      .transport { display:grid; grid-template-columns:auto minmax(0,1fr); }
+      #seek { width:100%; min-width:0; height:44px; margin:0; }
+      .time { grid-column:1/-1; text-align:center; }
+      .actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .actions > * { text-align:center; }
+      main { padding-bottom:env(safe-area-inset-bottom); }
+    }
+</style>
   <script defer src="player.js?v=cover"></script>
 </head>
 <body>
