@@ -101,6 +101,19 @@
   
 /* NOXIS mobile responsive v1 */
 @media(max-width:64rem){.shell{width:calc(100% - 1.5rem)}.catalogue{grid-template-columns:minmax(0,1fr)}.catalogue article{min-width:0;overflow-wrap:anywhere}.site-header a,.book-reader summary{min-height:44px;display:inline-flex;align-items:center}.excerpt{max-height:none;overflow:visible;line-height:1.75}.cover{max-width:18rem;margin-inline:auto}} @media(max-width:36rem){.book{grid-template-columns:minmax(0,1fr)}.book-reader summary{width:100%;justify-content:center}}
+
+    /* Consistent catalogue alignment and title sizing */
+    .catalogue article { min-width: 0; display: flex; flex-direction: column; }
+    .book { align-items: start; }
+    .book > div { min-width: 0; }
+    .book .author { margin-top: 0; }
+    .book h2 { font-size: clamp(1.65rem, 2.7vw, 2.5rem); overflow-wrap: anywhere; }
+    #instinct-intuition-title { font-size: clamp(1.55rem, 2.35vw, 2.05rem); }
+    .catalogue article > .book-reader { margin-top: auto; padding-top: 1.25rem; }
+    .catalogue article:has(> .book-reader[open]) > .book-reader { margin-top: 0; padding-top: 0; }
+    @media (max-width: 36rem) {
+      .book h2, #instinct-intuition-title { font-size: clamp(1.65rem, 7vw, 2.2rem); }
+    }
 </style>
 </head>
 <body>
