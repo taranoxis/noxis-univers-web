@@ -56,3 +56,9 @@ html,body{width:100%!important;max-width:100%!important}
 .universe .universe-close{color:var(--gold2)!important;background:#071017!important;border:1px solid var(--gold)!important;width:44px!important;height:44px!important}
 .universe .noxis-mobile-nav{padding-top:70px}
 }
+
+/* Keep mobile navigation separate from artwork hotspots. */
+@media (max-width:1024px), (hover:none) and (pointer:coarse) and (max-width:1366px){
+.world .scene .hotspot,.world .scene .bigger-hotspot{visibility:hidden!important;pointer-events:none!important}
+.world .scene .scene-bg{object-fit:fill!important}
+}
